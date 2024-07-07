@@ -4,11 +4,21 @@
         <title>Apache HertzBeat Blog</title>
         <link>https://hertzbeat.apache.org/blog</link>
         <description>Apache HertzBeat Blog</description>
-        <lastBuildDate>Sat, 15 Jun 2024 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Sun, 07 Jul 2024 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
         <copyright>Copyright © 2024 Apache HertzBeat.</copyright>
+        <item>
+            <title><![CDATA[Welcome to HertzBeat Community Committer!]]></title>
+            <link>https://hertzbeat.apache.org/blog/2024/07/07/new-committer</link>
+            <guid>https://hertzbeat.apache.org/blog/2024/07/07/new-committer</guid>
+            <pubDate>Sun, 07 Jul 2024 00:00:00 GMT</pubDate>
+            <description><![CDATA[hertzBeat]]></description>
+            <content:encoded><![CDATA[<p><img loading="lazy" alt="hertzBeat" src="/assets/images/new-committer-f8ad9cf268df899234aaeaef8541e294.png" width="1920" height="600" class="img_ev3q"></p><blockquote><p>🎉 I am very pleased to become a Committer for the Apache HertzBeat project, and I have been invited by the community to introduce myself 🥰.</p></blockquote><p>I have been working in backend development since I started my career in 2015, engaging in business development, infrastructure, and technical management. Currently, I am working as an infrastructure engineer at an internet company.</p><p>I have always been passionate about the open-source community, and I am also a Committer for Apache Pulsar and a Contributor for OpenTelemetry and VictoriaMetrics.</p><h1>My Connection with HertzBeat</h1><p>In April of this year, when HertzBeat entered the Apache Incubator, I happened to see a recommendation on a WeChat public account in my social circle.</p><p>My first reaction was that the name was really well chosen 😄. Then, after looking closely at the features it provides and the problems it solves, I realized its powerful functionalities 💪.</p><p>Since I also need to maintain an observability system at my company, and I have participated in an open-source project called cprobe (which has some similar goals to HertzBeat), I have some experience with monitoring systems and a strong interest in them. Therefore, I read the documentation and quickly started it locally (the community has done a great job in this regard, as many open-source projects lose potential developers right at the initial startup step).</p><h1>Starting Contributions</h1><p>My first PR was to fix an incorrect path in a PR template, and the community responded very quickly, which gave me a very positive impression.</p><p>So I started reading some of the core collection code of HertzBeat and found that many logics did not have unit tests at the time. Thus, I began to fill in these tests.</p><blockquote><p>Starting with unit tests is indeed a good way to get familiar with a new project.</p></blockquote><p>While supplementing the unit tests, I also discovered some code logic optimizations and code formatting inconsistencies, which I addressed and reported to the community.</p><p>Similarly, the community's response was swift 🏎, which greatly encouraged my enthusiasm.</p><p>During this process, I also incorporated some excellent experiences from other communities (Pulsar, OpenTelemetry) into HertzBeat. Everyone learned from each other, which is undoubtedly the charm of open source.</p><p>Lastly, I want to thank the community's logicz for inviting me to become a Committer and tom for reviewing my PRs. I wish HertzBeat a successful graduation from the incubator and becoming a star project 🎊.</p>]]></content:encoded>
+            <category>opensource</category>
+            <category>practice</category>
+        </item>
         <item>
             <title><![CDATA[HertzBeat First Apache version v1.6.0 released now!]]></title>
             <link>https://hertzbeat.apache.org/blog/2024/06/15/hertzbeat-v1.6.0</link>
