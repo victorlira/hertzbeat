@@ -21,8 +21,8 @@
 <link rel="mask-icon" href="/zh-cn/img/hertzbeat-logo.svg" color="rgb(234, 90, 7)">
 <meta name="msapplication-TileImage" content="/zh-cn/img/hertzbeat-logo.svg">
 <meta name="msapplication-TileColor" content="#000"><link rel="stylesheet" href="/zh-cn/assets/css/styles.d11143d8.css">
-<link rel="preload" href="/zh-cn/assets/js/runtime~main.679dbeee.js" as="script">
-<link rel="preload" href="/zh-cn/assets/js/main.db1150ee.js" as="script">
+<link rel="preload" href="/zh-cn/assets/js/runtime~main.8abea837.js" as="script">
+<link rel="preload" href="/zh-cn/assets/js/main.fedecaca.js" as="script">
 </head>
 <body class="navigation-with-keyboard">
 <script>!function(){function e(e){document.documentElement.setAttribute("data-theme",e)}var t=function(){var e=null;try{e=localStorage.getItem("theme")}catch(e){}return e}();null!==t?e(t):window.matchMedia("(prefers-color-scheme: dark)").matches?e("dark"):(window.matchMedia("(prefers-color-scheme: light)").matches,e("light"))}()</script><div id="__docusaurus">
@@ -41,7 +41,7 @@
 <!-- -->集 <strong>监控+告警+通知</strong> 为一体，支持对应用服务，应用程序，数据库，缓存，操作系统，大数据，中间件，Web服务器，云原生，网络，自定义等监控，阈值告警通知一步到位。<br>
 <!-- -->更自由化的阈值规则(计算表达式)，<code>邮件</code> <code>Discord</code> <code>Slack</code> <code>Telegram</code> <code>钉钉</code> <code>微信</code> <code>飞书</code> <code>短信</code> <code>Webhook</code> 等方式及时送达。</p></blockquote><blockquote><p>我们将<code>Http, Jmx, Ssh, Snmp, Jdbc, Prometheus</code>等协议规范可配置化，您只需在浏览器配置<code>YML</code>就能使用这些协议去自定义采集任何您想要的指标。<br>
 <!-- -->您相信只需配置下就能立刻适配一款<code>K8s</code>或<code>Docker</code>等新的监控类型吗？</p></blockquote><blockquote><p><code>HertzBeat</code>的强大自定义，多类型支持，易扩展，低耦合，希望能帮助开发者和中小团队快速搭建自有监控系统。</p></blockquote><hr><h2 class="anchor anchorWithStickyNavbar_LWe7" id="完全开源">完全开源<a href="#完全开源" class="hash-link" aria-label="标题的直接链接" title="标题的直接链接">​</a></h2><ul><li>使用<code>Apache2</code>协议，由自由开放的开源社区主导维护的开源协作产品。</li><li>无监控数量<code>License</code>，监控类型等人为限制。</li><li>基于<code>Java+SpringBoot+TypeScript+Angular</code>主流技术栈构建，方便的二次开发。</li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="强大的监控模版">强大的监控模版<a href="#强大的监控模版" class="hash-link" aria-label="标题的直接链接" title="标题的直接链接">​</a></h2><blockquote><p>开始我们就说 hertzbeat 的特点是自定义监控能力，无需 Agent。在讨论这两点之前，我们先介绍下 hertzbeat 的不一样的监控模版。而正是因为这样的监控模版设计，才会有了后面的高级特性。  </p></blockquote><p>hertzbeat 自身并没有去创造一种采集数据协议，让对端来适配它。而是充分使用了现有的生态，SNMP采集网络交换机路由器信息，JMX采集JAVA应用信息，JDBC规范采集数据集信息，SSH直连执行脚本获取回显信息，HTTP+(JsonPath | prometheus等)解析接口信息，IPMI采集服务器信息等等。<br>
-<!-- -->hertzbeat 使用这些已有的标准协议或规范，将他们抽象规范可配置化，最后使其都可以通过编写YML格式监控模版的形式，来制定模版使用这些协议来采集任何想要的指标信息。  </p><p><img loading="lazy" alt="hertzbeat" src="/zh-cn/assets/images/multi-protocol-4fd3adc0f831fb1b2c5b683044758272.png" width="1720" height="968" class="img_ev3q"></p><p>你相信用户只需在UI页面编写一个监控模版，点击保存后，就能立刻适配一款<code>K8s</code>或<code>Docker</code>等新的监控类型吗？</p><p><img loading="lazy" alt="hertzbeat" src="/zh-cn/assets/images/9-48e1507b96c40fa9070414358797f05e.png" width="4064" height="2188" class="img_ev3q"></p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="已支持">已支持<a href="#已支持" class="hash-link" aria-label="标题的直接链接" title="标题的直接链接">​</a></h2><p><strong>一款监控类型对应一个YML监控模版</strong></p><ul><li><a href="https://raw.githubusercontent.com/apache/hertzbeat/master/manager/src/main/resources/define/app-website.yml" target="_blank" rel="noopener noreferrer">Website</a>, <a href="https://raw.githubusercontent.com/apache/hertzbeat/master/manager/src/main/resources/define/app-port.yml" target="_blank" rel="noopener noreferrer">Port Telnet</a>,
+<!-- -->hertzbeat 使用这些已有的标准协议或规范，将他们抽象规范可配置化，最后使其都可以通过编写YML格式监控模版的形式，来制定模版使用这些协议来采集任何想要的指标信息。  </p><p><img loading="lazy" alt="hertzbeat" src="/zh-cn/assets/images/multi-protocol-0ff009ee8c28c3885012498b33f6a664.png" width="1720" height="968" class="img_ev3q"></p><p>你相信用户只需在UI页面编写一个监控模版，点击保存后，就能立刻适配一款<code>K8s</code>或<code>Docker</code>等新的监控类型吗？</p><p><img loading="lazy" alt="hertzbeat" src="/zh-cn/assets/images/9-48e1507b96c40fa9070414358797f05e.png" width="4064" height="2188" class="img_ev3q"></p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="已支持">已支持<a href="#已支持" class="hash-link" aria-label="标题的直接链接" title="标题的直接链接">​</a></h2><p><strong>一款监控类型对应一个YML监控模版</strong></p><ul><li><a href="https://raw.githubusercontent.com/apache/hertzbeat/master/manager/src/main/resources/define/app-website.yml" target="_blank" rel="noopener noreferrer">Website</a>, <a href="https://raw.githubusercontent.com/apache/hertzbeat/master/manager/src/main/resources/define/app-port.yml" target="_blank" rel="noopener noreferrer">Port Telnet</a>,
 <a href="https://raw.githubusercontent.com/apache/hertzbeat/master/manager/src/main/resources/define/app-api.yml" target="_blank" rel="noopener noreferrer">Http Api</a>, <a href="https://raw.githubusercontent.com/apache/hertzbeat/master/manager/src/main/resources/define/app-ping.yml" target="_blank" rel="noopener noreferrer">Ping Connect</a>,
 <a href="https://raw.githubusercontent.com/apache/hertzbeat/master/manager/src/main/resources/define/app-jvm.yml" target="_blank" rel="noopener noreferrer">Jvm</a>, <a href="https://raw.githubusercontent.com/apache/hertzbeat/master/manager/src/main/resources/define/app-fullsite.yml" target="_blank" rel="noopener noreferrer">SiteMap</a>,
 <a href="https://raw.githubusercontent.com/apache/hertzbeat/master/manager/src/main/resources/define/app-ssl_cert.yml" target="_blank" rel="noopener noreferrer">Ssl Certificate</a>, <a href="https://raw.githubusercontent.com/apache/hertzbeat/master/manager/src/main/resources/define/app-springboot2.yml" target="_blank" rel="noopener noreferrer">SpringBoot2</a>,
@@ -91,7 +91,7 @@
             </span>
           </div>
         </div></div></div></div></footer></div>
-<script src="/zh-cn/assets/js/runtime~main.679dbeee.js"></script>
-<script src="/zh-cn/assets/js/main.db1150ee.js"></script>
+<script src="/zh-cn/assets/js/runtime~main.8abea837.js"></script>
+<script src="/zh-cn/assets/js/main.fedecaca.js"></script>
 </body>
 </html>
