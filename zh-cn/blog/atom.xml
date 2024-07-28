@@ -2,12 +2,42 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://hertzbeat.apache.org/zh-cn/blog</id>
     <title>Apache HertzBeat Blog</title>
-    <updated>2024-07-15T00:00:00.000Z</updated>
+    <updated>2024-07-28T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://hertzbeat.apache.org/zh-cn/blog"/>
     <subtitle>Apache HertzBeat Blog</subtitle>
     <icon>https://hertzbeat.apache.org/zh-cn/img/hertzbeat-logo.svg</icon>
     <rights>Copyright © 2024 Apache HertzBeat.</rights>
+    <entry>
+        <title type="html"><![CDATA[热烈欢迎 HertzBeat 小伙伴新晋社区 Committer!]]></title>
+        <id>https://hertzbeat.apache.org/zh-cn/blog/2024/07/28/new-committer</id>
+        <link href="https://hertzbeat.apache.org/zh-cn/blog/2024/07/28/new-committer"/>
+        <updated>2024-07-28T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[hertzBeat]]></summary>
+        <content type="html"><![CDATA[<p><img loading="lazy" alt="hertzBeat" src="/zh-cn/assets/images/new-committer-f8ad9cf268df899234aaeaef8541e294.png" width="1920" height="600" class="img_ev3q"></p><blockquote><p>非常荣幸能成为Apache Hertzbeat的Committer</p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="个人介绍">个人介绍<a href="#个人介绍" class="hash-link" aria-label="标题的直接链接" title="标题的直接链接">​</a></h2></blockquote><p>本人是2023年毕业，目前在一家互联网公司担任java开发工程师。</p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="初识-apache-hertzbeat">初识 Apache Hertzbeat<a href="#初识-apache-hertzbeat" class="hash-link" aria-label="标题的直接链接" title="标题的直接链接">​</a></h2><p>毕业之后，工作了半年，萌生出接触开源的想法。然而，在 GitHub 上搜索开源项目时，发现诸多社区活跃度欠佳，官方文档也不完善，致使项目上手难度颇大，因此开源之事暂且搁置。
+某天，在某平台看到小宝大佬的一个帖子，我瞬间兴趣盎然，随即私聊小宝，咨询开源相关事宜。小宝大佬极其热情且细致地为我讲解了不少开源方面的情况，并向我推荐了 Hertzbeat 这个项目。</p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="第一个pr">第一个PR<a href="#第一个pr" class="hash-link" aria-label="标题的直接链接" title="标题的直接链接">​</a></h2><p>我down了 Hertzbeat 的源码，并按照文档进行编译和测试，然后在页面点击功能的时候发现了一个前端弹窗的bug，所以我提交了自己的第一个issue，并且我成功认领了此issue
+于是开启了我的第一个PR。</p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="持续贡献">持续贡献<a href="#持续贡献" class="hash-link" aria-label="标题的直接链接" title="标题的直接链接">​</a></h2><p>在提交第一个 PR 之后，我持续关注 Hertzbeat 社区的 issue ，且尝试去解决当中存在的问题。相继完成了微信指定艾特人、接入 AI 、添加 PrestoDB 监控器、Bug 修改以及官网文档贡献等工作。</p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="收获">收获<a href="#收获" class="hash-link" aria-label="标题的直接链接" title="标题的直接链接">​</a></h2><p>经过几个月对开源的贡献，我收获满满，学习到了代码中的业务逻辑、代码规范，一些此前未曾使用过的技术框架，还有一些算法，可谓是获益良多。</p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="结语">结语<a href="#结语" class="hash-link" aria-label="标题的直接链接" title="标题的直接链接">​</a></h2><p>成为Apache Hertzbeat的Committer于我而言是很有意义对事情，今后我也会持续对Apache Hertzbeat社区贡献下去，也希望Apache Hertzbeat能顺利从孵化器毕业，希望社区越来越好。</p>]]></content>
+        <author>
+            <name>linDong</name>
+            <uri>https://github.com/Yanshuming1</uri>
+        </author>
+        <category label="opensource" term="opensource"/>
+        <category label="practice" term="practice"/>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[热烈欢迎 HertzBeat 小伙伴新晋社区 Committer!]]></title>
+        <id>https://hertzbeat.apache.org/zh-cn/blog/2024/07/27/new-committer</id>
+        <link href="https://hertzbeat.apache.org/zh-cn/blog/2024/07/27/new-committer"/>
+        <updated>2024-07-27T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[hertzBeat]]></summary>
+        <content type="html"><![CDATA[<p><img loading="lazy" alt="hertzBeat" src="/zh-cn/assets/images/new-committer-f8ad9cf268df899234aaeaef8541e294.png" width="1920" height="600" class="img_ev3q"></p><blockquote><p>非常荣幸能成为Apache Hertzbeat的Committer</p></blockquote><h2 class="anchor anchorWithStickyNavbar_LWe7" id="个人介绍">个人介绍<a href="#个人介绍" class="hash-link" aria-label="标题的直接链接" title="标题的直接链接">​</a></h2><p>本人自21年参与工作至今，一直从事Java后端开发工作。目前在一家互联网公司中参与融合通信中台的开发。</p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="初识-apache-hertzbeat">初识 Apache Hertzbeat<a href="#初识-apache-hertzbeat" class="hash-link" aria-label="标题的直接链接" title="标题的直接链接">​</a></h2><p>因工作的原因，在空闲时间里会研究学习开源框架的代码来提升自己。无意间萌生了为开源社区做贡献的想法，也正是这个时候在一篇文章中认识到了Hertzbeat。Hertzbeat与我在工作中接触到的Prometheus以及Skywalking不一样，其无需Agent以及可以通过yaml自定义监控的特性深深吸引了我。为方便进一步学习，我拉取了Hertzbeat源码并运行调试。</p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="第一个pr">第一个PR<a href="#第一个pr" class="hash-link" aria-label="标题的直接链接" title="标题的直接链接">​</a></h2><p>说来也奇怪，在CONTRIBUTING文档的指引下，我尝试去启动Hertzbeat但没有成功，启动报错显示Node.js版本至少需要18以上。也正是因为如此，我修改了CONTRIBUTING文档并提交，最终促成了我的第一个PR。</p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="持续贡献">持续贡献<a href="#持续贡献" class="hash-link" aria-label="标题的直接链接" title="标题的直接链接">​</a></h2><p>随着阅读文档和源码，我越来越熟悉Hertzbeat，除了完善文档及修复bug以外，还接入了DNS和注册中心监控。在完成了注册中心监控后，便着手开始更有挑战性的http_sd新特性开发。</p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="收获">收获<a href="#收获" class="hash-link" aria-label="标题的直接链接" title="标题的直接链接">​</a></h2><p>回顾一路以来的贡献，即使一开始只是最简单的订正文档与文档翻译，社区也是十分欢迎，让我深刻感受到了这个社区的包容性。后来在开发http_sd新特性的时候，与作者tom的交流也让我更进一步了解Hertzbeat整体的架构以及职责划分，最终也能完成这个新特性。</p><p>同时，在阅读Hertzbeat源码期间，学习到了很多代码写法以及技术点的实际应用，对我个人的成长也是非常有帮助的。</p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="结语">结语<a href="#结语" class="hash-link" aria-label="标题的直接链接" title="标题的直接链接">​</a></h2><p>成为Apache Hertzbeat的Committer于我而言是一次很有趣的经历，无时无刻都在激励着我。今后我也会持续对Apache Hertzbeat社区贡献下去，也希望Apache Hertzbeat能顺利从孵化器毕业。</p>]]></content>
+        <author>
+            <name>Calvin979</name>
+            <uri>https://github.com/Calvin979</uri>
+        </author>
+        <category label="opensource" term="opensource"/>
+        <category label="practice" term="practice"/>
+    </entry>
     <entry>
         <title type="html"><![CDATA[热烈欢迎 HertzBeat 小伙伴新晋社区 Committer!]]></title>
         <id>https://hertzbeat.apache.org/zh-cn/blog/2024/07/15/new-committer</id>
