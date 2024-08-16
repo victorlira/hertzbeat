@@ -212,6 +212,7 @@ public class JmxCollectImpl extends AbstractCollect {
             environment.put("com.sun.jndi.rmi.factory.socket", clientSocketFactory);
         }
         JMXServiceURL jmxServiceUrl = new JMXServiceURL(url);
+        // TODO @Tom 从这里进入会加载到那个方法
         conn = JMXConnectorFactory.connect(jmxServiceUrl, environment);
         connectionCommonCache.addCache(identifier, new JmxConnect(conn));
         return conn;
