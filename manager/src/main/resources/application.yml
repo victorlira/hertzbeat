@@ -165,6 +165,15 @@ warehouse:
       password: root
       expire-time: '30d'
       replication: 1
+    doris:
+      enabled: false
+      host: 127.0.0.1
+      httpPort: 8030
+      username: root
+      password:
+      db: _internal_schema
+      table: hzb_history
+      expire-time: '30d'
   # store real-time metrics data, enable only one below
   real-time:
     memory:
