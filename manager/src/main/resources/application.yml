@@ -169,6 +169,7 @@ warehouse:
       enabled: false
       host: 127.0.0.1
       httpPort: 8030
+      jdbcPort: 9030
       username: root
       password:
       database: hertzbeat

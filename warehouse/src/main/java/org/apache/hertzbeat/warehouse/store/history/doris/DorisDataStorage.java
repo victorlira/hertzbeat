@@ -38,6 +38,30 @@ import org.springframework.stereotype.Component;
 @ConditionalOnProperty(prefix = "warehouse.store.doris", name = "enabled", havingValue = "true")
 @Slf4j
 public class DorisDataStorage extends AbstractHistoryDataStorage {
+    private final static String CREATE_TABLE_SQL = """
+            CREATE TABLE IF NOT EXISTS %s (
+                ts datetime,
+                v VARIANT,
+                INDEX idx_var(v) USING INVERTED PROPERTIES("parser" = "unicode")
+            )
+            ENGINE = OLAP
+            DUPLICATE KEY(`ts`)
+            PARTITION BY RANGE(`ts`) ()
+            DISTRIBUTED BY RANDOM BUCKETS 16
+            PROPERTIES (
+            "compaction_policy" = "time_series",
+            "dynamic_partition.enable" = "true",
+            "dynamic_partition.create_history_partition" = "true",
+            "dynamic_partition.time_unit" = "DAY",
+            "dynamic_partition.start" = "-30",
+            "dynamic_partition.end" = "1",
+            "dynamic_partition.prefix" = "p",
+            "dynamic_partition.buckets" = "16",
+            "dynamic_partition.replication_num" = "1",
+            "replication_num" = "1",
+            "enable_single_replica_compaction" = "true"
+            );
+            """;
 
     private HikariDataSource hikariDataSource;
 
@@ -49,7 +73,7 @@ public class DorisDataStorage extends AbstractHistoryDataStorage {
             return;
         }
         this.hikariDataSource = new HikariDataSource();
-        this.hikariDataSource.setJdbcUrl("jdbc:mysql://" + dorisProperties.host() + ":" + dorisProperties.jdbcPort() + "/" + dorisProperties.database());
+        this.hikariDataSource.setJdbcUrl("jdbc:mysql://" + dorisProperties.host() + ":" + dorisProperties.jdbcPort() + "/" + "mysql");
         this.hikariDataSource.setUsername(dorisProperties.username());
         this.hikariDataSource.setPassword(dorisProperties.password());
         this.hikariDataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
@@ -66,20 +90,23 @@ public class DorisDataStorage extends AbstractHistoryDataStorage {
         // validation query
         this.hikariDataSource.setConnectionTestQuery("select 1");
         createDatabase(dorisProperties.database());
-
+        if (hikariDataSource.isRunning()) {
+            this.serverAvailable = true;
+        }
     }
 
     private void createDatabase(String database) {
         try (Connection connection = hikariDataSource.getConnection()) {
             connection.createStatement().execute("CREATE DATABASE IF NOT EXISTS " + database);
+            log.info("[warehouse doris]--Create database {} successful", database);
         } catch (SQLException e) {
             log.error("[warehouse doris]--Error: {}", e.getMessage(), e);
         }
     }
 
-    private void createTable(String database, String tableName) {
+    private void createTable(String tableName) {
         try (Connection connection = hikariDataSource.getConnection()) {
-            connection.createStatement().execute("USE " + database);
+            connection.createStatement().execute("USE " + dorisProperties.database());
             connection.createStatement().execute("CREATE TABLE IF NOT EXISTS " + tableName);
         } catch (SQLException e) {
             log.error("[warehouse doris]--Error: {}", e.getMessage(), e);
@@ -140,7 +167,7 @@ public class DorisDataStorage extends AbstractHistoryDataStorage {
         }
         String monitorId = String.valueOf(metricsData.getId());
         String tableName = getTableName(metricsData.getApp(), metricsData.getMetrics());
-        createTable(dorisProperties.database(), tableName);
+//        createTable(tableName);
         List<CollectRep.Field> fieldsList = metricsData.getFieldsList();
         StringBuilder jsonData = new StringBuilder();
         jsonData.append("[");
@@ -171,6 +198,7 @@ public class DorisDataStorage extends AbstractHistoryDataStorage {
         } else {
             jsonData.append(']');
         }
+        log.info("[warehouse doris]--Write data: {}", jsonData);
 
         try {
             DorisStreamLoadUtil.sendData(
@@ -182,7 +210,7 @@ public class DorisDataStorage extends AbstractHistoryDataStorage {
                     tableName,
                     jsonData.toString()
             );
-            log.debug("[warehouse doris]-Write successful");
+            log.info("[warehouse doris]-Write successful");
         } catch (Exception e) {
             log.error("[warehouse doris]--Error: {}", e.getMessage(), e);
         }
