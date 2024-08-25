@@ -171,7 +171,7 @@ warehouse:
       httpPort: 8030
       username: root
       password:
-      db: _internal_schema
+      database: hertzbeat
       table: hzb_history
       expire-time: '30d'
   # store real-time metrics data, enable only one below

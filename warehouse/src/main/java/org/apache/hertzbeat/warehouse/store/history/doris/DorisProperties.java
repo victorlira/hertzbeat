@@ -32,9 +32,10 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
 public record DorisProperties(@DefaultValue("false") boolean enabled,
                               @DefaultValue("127.0.0.1") String host,
                               @DefaultValue("8030") int httpPort,
+                              @DefaultValue("9030") int jdbcPort,
                               @DefaultValue("root") String username,
                               @DefaultValue("") String password,
-                              @DefaultValue("_internal_schema") String db,
+                              @DefaultValue("hertzbeat") String database,
                               @DefaultValue("hzb_history") String table,
                               // Database TTL, default is 30 days.
                               @DefaultValue("30d") String expireTime) {

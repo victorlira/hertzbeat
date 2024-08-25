@@ -19,6 +19,7 @@ package org.apache.hertzbeat.warehouse.utils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpHeaders;
@@ -32,19 +33,20 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 @Slf4j
+@Data
 public class DorisStreamLoadUtil {
 
     public static void sendData(String host,
                                 int httpPort,
                                 String username,
                                 String password,
-                                String db,
+                                String database,
                                 String table,
                                 String content) throws Exception {
         final String loadUrl = String.format("http://%s:%s/api/%s/%s/_stream_load",
                 host,
                 httpPort,
-                db,
+                database,
                 table);
 
         final HttpClientBuilder httpClientBuilder = HttpClients
