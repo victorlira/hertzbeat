@@ -38,6 +38,6 @@ public record DorisProperties(@DefaultValue("false") boolean enabled,
                               @DefaultValue("hertzbeat") String database,
                               @DefaultValue("hzb_history") String table,
                               // Database TTL, default is 30 days.
-                              @DefaultValue("30d") String expireTime) {
+                              @DefaultValue("30") String expireTime) {
 }
 
