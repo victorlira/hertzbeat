@@ -67,14 +67,13 @@ public class DorisStreamLoadUtil {
             put.setHeader("format","json");
             // mode:array
             put.setHeader("strip_outer_array","true");
-            // ignore error
-            put.setHeader("max_filter_ratio","0.1");
             put.setEntity(entity);
 
             try (CloseableHttpResponse response = client.execute(put)) {
                 String loadResult = "";
                 if (response.getEntity() != null) {
                     loadResult = EntityUtils.toString(response.getEntity());
+                    log.info("doris stream load result: {}", loadResult);
                 }
                 final int statusCode = response.getStatusLine().getStatusCode();
                 if (statusCode != 200) {

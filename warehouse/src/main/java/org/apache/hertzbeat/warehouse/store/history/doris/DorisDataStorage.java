@@ -21,10 +21,12 @@ package org.apache.hertzbeat.warehouse.store.history.doris;
 import com.zaxxer.hikari.HikariDataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.hertzbeat.common.constants.CommonConstants;
 import org.apache.hertzbeat.common.entity.dto.Value;
 import org.apache.hertzbeat.common.entity.message.CollectRep;
@@ -53,7 +55,7 @@ public class DorisDataStorage extends AbstractHistoryDataStorage {
             "dynamic_partition.enable" = "true",
             "dynamic_partition.create_history_partition" = "true",
             "dynamic_partition.time_unit" = "DAY",
-            "dynamic_partition.start" = "-30",
+            "dynamic_partition.start" = "-%s",
             "dynamic_partition.end" = "1",
             "dynamic_partition.prefix" = "p",
             "dynamic_partition.buckets" = "16",
@@ -107,14 +109,15 @@ public class DorisDataStorage extends AbstractHistoryDataStorage {
     private void createTable(String tableName) {
         try (Connection connection = hikariDataSource.getConnection()) {
             connection.createStatement().execute("USE " + dorisProperties.database());
-            connection.createStatement().execute("CREATE TABLE IF NOT EXISTS " + tableName);
+            String createTableSql = String.format(CREATE_TABLE_SQL, tableName, dorisProperties.expireTime());
+            connection.createStatement().execute(createTableSql);
         } catch (SQLException e) {
             log.error("[warehouse doris]--Error: {}", e.getMessage(), e);
         }
     }
 
     private String getTableName(String app, String metrics) {
-        return app + "_" + metrics;
+        return "hzb_" + app + "_" + metrics;
     }
 
 
@@ -167,14 +170,13 @@ public class DorisDataStorage extends AbstractHistoryDataStorage {
         }
         String monitorId = String.valueOf(metricsData.getId());
         String tableName = getTableName(metricsData.getApp(), metricsData.getMetrics());
-//        createTable(tableName);
+        createTable(tableName);
         List<CollectRep.Field> fieldsList = metricsData.getFieldsList();
         StringBuilder jsonData = new StringBuilder();
-        jsonData.append("[");
+        jsonData.append("{");
 
         for (CollectRep.ValueRow valueRow : metricsData.getValuesList()) {
             StringBuilder row = new StringBuilder();
-            row.append("{");
             row.append("\"monitor_id\":\"").append(monitorId).append("\",");
             for (int i = 0; i < fieldsList.size(); i++) {
                 CollectRep.Field field = fieldsList.get(i);
@@ -187,18 +189,29 @@ public class DorisDataStorage extends AbstractHistoryDataStorage {
                     }
                 }
             }
-            row.append("\"ts\":").append(System.currentTimeMillis());
             row.append("},");
             jsonData.append(row);
         }
 
-        // Remove the trailing comma and close the JSON array
+        // Remove the trailing comma and close the JSON object
         if (jsonData.charAt(jsonData.length() - 1) == ',') {
-            jsonData.setCharAt(jsonData.length() - 1, ']');
+            jsonData.deleteCharAt(jsonData.length() - 1);
         } else {
-            jsonData.append(']');
+            jsonData.append('}');
         }
-        log.info("[warehouse doris]--Write data: {}", jsonData);
+
+        System.out.println(jsonData);
+
+        String ts = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        String json =
+            """
+                {
+                  "ts": "%s",
+                  "v": %s
+                }
+            """.formatted(ts, jsonData);
+
+        log.info("[warehouse doris]--Write data: {}", json);
 
         try {
             DorisStreamLoadUtil.sendData(
@@ -208,7 +221,7 @@ public class DorisDataStorage extends AbstractHistoryDataStorage {
                     dorisProperties.password(),
                     dorisProperties.database(),
                     tableName,
-                    jsonData.toString()
+                    json
             );
             log.info("[warehouse doris]-Write successful");
         } catch (Exception e) {
