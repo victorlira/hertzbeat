@@ -77,7 +77,7 @@ public class DorisDataStorage extends AbstractHistoryDataStorage {
             );
             """;
 
-    private static final String QUERY_HISTORY_SQL = "SELECT UNIX_TIMESTAMP(ts) as ts, v['%s'], metrics FROM %s WHERE ts >= now() -  interval '%s' and monitor_id = %s `ORDER BY` ts `DESC`;";
+    private static final String QUERY_HISTORY_SQL = "SELECT UNIX_TIMESTAMP(ts) as ts, v['%s'], metrics FROM %s WHERE ts >= now() -  interval %s and monitor_id = %s ORDER BY ts DESC;";
 
     private HikariDataSource hikariDataSource;
 
@@ -115,7 +115,6 @@ public class DorisDataStorage extends AbstractHistoryDataStorage {
     private void createDatabase(String database) {
         try (Connection connection = hikariDataSource.getConnection()) {
             connection.createStatement().executeUpdate(String.format(CREATE_DATABASE_SQL, database));
-            log.info("[warehouse doris]--Create database {} successful", database);
         } catch (SQLException e) {
             log.error("[warehouse doris]--Error: {}", e.getMessage(), e);
         }
@@ -155,17 +154,15 @@ public class DorisDataStorage extends AbstractHistoryDataStorage {
         }
 
         String interval = history2interval(history);
-        String selectSql = String.format(QUERY_HISTORY_SQL, getTableName(app), metric, interval, monitorId);
+        String selectSql = String.format(QUERY_HISTORY_SQL, metric,getTableName(app), interval, monitorId);
         try (Connection connection = hikariDataSource.getConnection()) {
             connection.createStatement().execute("USE " + dorisProperties.database());
             ResultSet resultSet = connection.createStatement().executeQuery(selectSql);
             while (resultSet.next()) {
                 long ts = resultSet.getLong(1);
                 if (ts == 0) {
-                    if (log.isErrorEnabled()) {
                         log.error("[warehouse doris] getHistoryMetricData query result timestamp is 0, ignore. {}.",
                                 selectSql);
-                    }
                     continue;
                 }
                 String instanceValue = resultSet.getString(2);
@@ -186,22 +183,7 @@ public class DorisDataStorage extends AbstractHistoryDataStorage {
         }
         return Map.of();
     }
-    private String double2decimalString(double d) {
-        return BigDecimal.valueOf(d).setScale(4, RoundingMode.HALF_UP).stripTrailingZeros().toPlainString();
-    }
-    private String history2interval(String history) {
-        if (history == null) {
-            return null;
-        }
-        history = history.trim().toLowerCase();
 
-        // Be careful, the order matters.
-        return history.replaceAll("d", " day") //
-                .replaceAll("s", " second") //
-                .replaceAll("w", " week") //
-                .replaceAll("h", " hour")//
-                .replaceAll("m", " minute");
-    }
     /**
      * query history range interval metrics data from doris
      * max min mean metrics value
@@ -270,7 +252,6 @@ public class DorisDataStorage extends AbstractHistoryDataStorage {
                     tableName,
                     json
             );
-            log.info("[warehouse doris]-Write successful: {}", json);
         } catch (Exception e) {
             log.error("[warehouse doris]--Error: {}", e.getMessage(), e);
         }
@@ -278,7 +259,21 @@ public class DorisDataStorage extends AbstractHistoryDataStorage {
 
 
     @Override
-    public void destroy() throws Exception {
+    public void destroy() throws Exception {}
 
+    private String double2decimalString(double d) {
+        return BigDecimal.valueOf(d).setScale(4, RoundingMode.HALF_UP).stripTrailingZeros().toPlainString();
+    }
+
+    private String history2interval(String history) {
+        if (history == null) {
+            return null;
+        }
+        history = history.trim().toLowerCase();
+        return history.replaceAll("d", " day") //
+                .replaceAll("s", " second") //
+                .replaceAll("w", " week") //
+                .replaceAll("h", " hour")//
+                .replaceAll("m", " minute");
     }
 }
