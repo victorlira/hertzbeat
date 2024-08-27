@@ -46,7 +46,7 @@ import org.springframework.stereotype.Component;
 @ConditionalOnProperty(prefix = "warehouse.store.doris", name = "enabled", havingValue = "true")
 @Slf4j
 public class DorisDataStorage extends AbstractHistoryDataStorage {
-    private final static String CREATE_DATABASE_SQL = "CREATE DATABASE  %s;";
+    private final static String CREATE_DATABASE_SQL = "CREATE DATABASE %s;";
 
     private final static String CREATE_TABLE_SQL = """
             CREATE TABLE IF NOT EXISTS %s (
@@ -77,7 +77,9 @@ public class DorisDataStorage extends AbstractHistoryDataStorage {
             );
             """;
 
-    private static final String QUERY_HISTORY_SQL = "SELECT UNIX_TIMESTAMP(ts) as ts, v['%s'], metrics FROM %s WHERE ts >= now() -  interval %s and monitor_id = %s ORDER BY ts DESC;";
+    private static final String QUERY_HISTORY_SQL = "SELECT UNIX_TIMESTAMP(ts) * 1000 as ts, v['%s'], metrics FROM %s WHERE ts >= now() -  interval %s and monitor_id = %s order by ts desc;";
+
+    private static final String QUERY_HISTORY_WITH_INSTANCE_SQL = "SELECT UNIX_TIMESTAMP(ts) * 1000 as ts, v['%s'], metrics FROM %s WHERE ts >= now() - interval %s and monitor_id = %s and metrics = '%s' order by ts desc;";
 
     private HikariDataSource hikariDataSource;
 
@@ -104,9 +106,8 @@ public class DorisDataStorage extends AbstractHistoryDataStorage {
         this.hikariDataSource.setMaxLifetime(0);
         // max idle time for recycle idle connection
         this.hikariDataSource.setIdleTimeout(0);
-        // validation query
-        this.hikariDataSource.setConnectionTestQuery("select 1");
-        createDatabase(dorisProperties.database());
+//        createDatabase(dorisProperties.database());
+        this.serverAvailable = true;
         if (hikariDataSource.isRunning()) {
             this.serverAvailable = true;
         }
@@ -114,7 +115,7 @@ public class DorisDataStorage extends AbstractHistoryDataStorage {
 
     private void createDatabase(String database) {
         try (Connection connection = hikariDataSource.getConnection()) {
-            connection.createStatement().executeUpdate(String.format(CREATE_DATABASE_SQL, database));
+            connection.prepareStatement(String.format(CREATE_DATABASE_SQL, database)).executeUpdate();
         } catch (SQLException e) {
             log.error("[warehouse doris]--Error: {}", e.getMessage(), e);
         }
@@ -154,34 +155,30 @@ public class DorisDataStorage extends AbstractHistoryDataStorage {
         }
 
         String interval = history2interval(history);
-        String selectSql = String.format(QUERY_HISTORY_SQL, metric,getTableName(app), interval, monitorId);
+        String selectSql = label == null ? String.format(QUERY_HISTORY_SQL, metric, getTableName(app), interval, monitorId)
+                : String.format(QUERY_HISTORY_WITH_INSTANCE_SQL, metric, getTableName(app), interval, monitorId, label);
         try (Connection connection = hikariDataSource.getConnection()) {
             connection.createStatement().execute("USE " + dorisProperties.database());
             ResultSet resultSet = connection.createStatement().executeQuery(selectSql);
             while (resultSet.next()) {
                 long ts = resultSet.getLong(1);
-                if (ts == 0) {
-                        log.error("[warehouse doris] getHistoryMetricData query result timestamp is 0, ignore. {}.",
-                                selectSql);
-                    continue;
-                }
-                String instanceValue = resultSet.getString(2);
+
+                double value = resultSet.getDouble(2);
+                String strValue = double2decimalString(value);
+
+                String instanceValue = resultSet.getString(3);
                 if (instanceValue == null || StringUtils.isBlank(instanceValue)) {
                     instanceValue = "";
                 }
-                double value = resultSet.getDouble(3);
-                String strValue = double2decimalString(value);
 
                 List<Value> valueList = instanceValuesMap.computeIfAbsent(instanceValue, k -> new LinkedList<>());
                 valueList.add(new Value(strValue, ts));
             }
-            log.info("instanceValuesMap:{}", instanceValuesMap);
-            return instanceValuesMap;
-
         } catch (SQLException e) {
             log.error("[warehouse doris]--Error: {}", e.getMessage(), e);
         }
-        return Map.of();
+
+        return instanceValuesMap;
     }
 
     /**
