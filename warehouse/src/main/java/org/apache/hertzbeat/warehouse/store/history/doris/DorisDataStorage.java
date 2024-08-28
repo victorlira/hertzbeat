@@ -18,10 +18,12 @@
 
 package org.apache.hertzbeat.warehouse.store.history.doris;
 
+import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -49,7 +51,7 @@ import org.springframework.stereotype.Component;
 @ConditionalOnProperty(prefix = "warehouse.store.doris", name = "enabled", havingValue = "true")
 @Slf4j
 public class DorisDataStorage extends AbstractHistoryDataStorage {
-    private final static String CREATE_DATABASE_SQL = "CREATE DATABASE %s;";
+    private final static String CREATE_DATABASE_SQL = "CREATE DATABASE IF NOT EXISTS %s;";
 
     private final static String CREATE_TABLE_SQL = """
             CREATE TABLE IF NOT EXISTS %s (
@@ -82,16 +84,16 @@ public class DorisDataStorage extends AbstractHistoryDataStorage {
             );
             """;
 
-    private static final String QUERY_HISTORY_SQL = "SELECT UNIX_TIMESTAMP(ts) * 1000 as ts, v['%s'], metrics, label FROM %s WHERE ts >= now() -  interval %s and monitor_id = %s order by ts desc;";
+    private static final String QUERY_HISTORY_SQL = "SELECT UNIX_TIMESTAMP(ts) * 1000 as ts, v['%s'], label FROM %s WHERE ts >= now() -  interval %s and monitor_id = %s and metrics = '%s' order by ts desc;";
 
-    private static final String QUERY_HISTORY_WITH_LABEL_SQL = "SELECT UNIX_TIMESTAMP(ts) * 1000 as ts, v['%s'], metrics, label FROM %s WHERE ts >= now() - interval %s and monitor_id = %s and label = '%s' order by ts desc;";
+    private static final String QUERY_HISTORY_WITH_LABEL_SQL = "SELECT UNIX_TIMESTAMP(ts) * 1000 as ts, v['%s'], label FROM %s WHERE ts >= now() - interval %s and monitor_id = %s and label = '%s' and metrics = '%s' order by ts desc;";
 
     private static final String QUERY_INSTANCE_SQL = "SELECT DISTINCT label FROM %s WHERE ts >= now() - interval 1 WEEK and metrics = '%s';";
 
     private static final String QUERY_HISTORY_INTERVAL_WITH_INSTANCE_SQL = """
-            WITH base_data AS (
+            WITH data AS (
                 SELECT
-                    UNIX_TIMESTAMP(ts) * 1000 asts,
+                    CAST(UNIX_TIMESTAMP(ts) * 1000 as bigint) as ts,
                     CAST(v['%s'] AS DOUBLE) AS value
                 FROM
                     %s
@@ -106,7 +108,7 @@ public class DorisDataStorage extends AbstractHistoryDataStorage {
                     value,
                     FIRST_VALUE(value) OVER (ORDER BY ts ASC) AS first
                 FROM
-                    base_data
+                    data
             )
             SELECT
                 MIN(ts) AS first_ts,
@@ -116,7 +118,6 @@ public class DorisDataStorage extends AbstractHistoryDataStorage {
                 MAX(value) AS max
             FROM
                 first_value_cte;
-            
             """;
 
 
@@ -131,22 +132,17 @@ public class DorisDataStorage extends AbstractHistoryDataStorage {
         }
         ZoneId systemZoneId = ZoneId.systemDefault();
         String zoneIdString = systemZoneId.getId();
-        this.hikariDataSource = new HikariDataSource();
-        this.hikariDataSource.setJdbcUrl("jdbc:mysql://" + dorisProperties.host() + ":" + dorisProperties.jdbcPort()
-                + "/mysql?useUnicode=true&characterEncoding=utf8&useTimezone=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone="+zoneIdString);
-        this.hikariDataSource.setUsername(dorisProperties.username());
-        this.hikariDataSource.setPassword(dorisProperties.password());
-        this.hikariDataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        // minimum number of idle connection
-        this.hikariDataSource.setMinimumIdle(10);
-        // maximum number of connection in the pool
-        this.hikariDataSource.setMaximumPoolSize(10);
-        // maximum wait milliseconds for get connection from pool
-        this.hikariDataSource.setConnectionTimeout(30000);
-        // maximum lifetime for each connection
-        this.hikariDataSource.setMaxLifetime(0);
-        // max idle time for recycle idle connection
-        this.hikariDataSource.setIdleTimeout(0);
+        HikariConfig hikariConfig = new HikariConfig();
+        hikariConfig.setJdbcUrl("jdbc:mysql://" + dorisProperties.host() + ":" + dorisProperties.jdbcPort()
+                + "/hertzbeat?useUnicode=true&characterEncoding=utf8&useTimezone=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone="+zoneIdString);
+        hikariConfig.setUsername(dorisProperties.username());
+        hikariConfig.setPassword(dorisProperties.password());
+        hikariConfig.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        hikariConfig.setMinimumIdle(2);
+        hikariConfig.setMaximumPoolSize(10);
+        hikariConfig.setIdleTimeout(30000);
+        hikariConfig.setConnectionTimeout(30000);
+        this.hikariDataSource = new HikariDataSource(hikariConfig);
 //        createDatabase(dorisProperties.database());
         this.serverAvailable = true;
         if (hikariDataSource.isRunning()) {
@@ -156,7 +152,7 @@ public class DorisDataStorage extends AbstractHistoryDataStorage {
 
     private void createDatabase(String database) {
         try (Connection connection = hikariDataSource.getConnection()) {
-            connection.prepareStatement(String.format(CREATE_DATABASE_SQL, database)).executeUpdate();
+            connection.createStatement().execute(String.format(CREATE_DATABASE_SQL, database));
         } catch (SQLException e) {
             log.error("[warehouse doris]--Error: {}", e.getMessage(), e);
         }
@@ -164,7 +160,7 @@ public class DorisDataStorage extends AbstractHistoryDataStorage {
 
     private void createTable(String tableName) {
         try (Connection connection = hikariDataSource.getConnection()) {
-            connection.createStatement().execute("USE " + dorisProperties.database());
+            connection.createStatement().execute("USE %s;".formatted(dorisProperties.database()));
             String createTableSql = String.format(CREATE_TABLE_SQL, tableName, dorisProperties.expireTime());
             connection.createStatement().executeUpdate(createTableSql);
         } catch (SQLException e) {
@@ -196,8 +192,8 @@ public class DorisDataStorage extends AbstractHistoryDataStorage {
         }
 
         String interval = history2interval(history);
-        String selectSql = label == null ? String.format(QUERY_HISTORY_SQL, metric, getTableName(app), interval, monitorId)
-                : String.format(QUERY_HISTORY_WITH_LABEL_SQL, metric, getTableName(app), interval, monitorId, label);
+        String selectSql = label == null ? String.format(QUERY_HISTORY_SQL, metric, getTableName(app), interval, monitorId, metrics)
+                : String.format(QUERY_HISTORY_WITH_LABEL_SQL, metric, getTableName(app), interval, monitorId, label, metrics);
         try (Connection connection = hikariDataSource.getConnection()) {
             connection.createStatement().execute("USE " + dorisProperties.database());
             ResultSet resultSet = connection.createStatement().executeQuery(selectSql);
@@ -207,7 +203,7 @@ public class DorisDataStorage extends AbstractHistoryDataStorage {
                 double value = resultSet.getDouble(2);
                 String strValue = double2decimalString(value);
 
-                String instanceValue = resultSet.getString(4);
+                String instanceValue = resultSet.getString(3);
                 if (instanceValue == null || StringUtils.isBlank(instanceValue)) {
                     instanceValue = "";
                 }
@@ -231,6 +227,7 @@ public class DorisDataStorage extends AbstractHistoryDataStorage {
      * @param metrics   metrics
      * @param metric    metric
      * @param label     label
+     *
      * @param history   history range
      * @return metrics data
      */
@@ -252,7 +249,7 @@ public class DorisDataStorage extends AbstractHistoryDataStorage {
                  ResultSet resultSet = statement.executeQuery(selectSql)) {
                 while (resultSet.next()) {
                     String instanceValue = resultSet.getString(1);
-                    if (instanceValue == null || StringUtils.isBlank(instanceValue)) {
+                    if (instanceValue == null || StringUtils.isBlank(instanceValue) || instanceValue.equals("{}")) {
                         instances.add("''");
                     } else {
                         instances.add(instanceValue);
@@ -264,12 +261,7 @@ public class DorisDataStorage extends AbstractHistoryDataStorage {
         }
         Map<String, List<Value>> instanceValuesMap = new HashMap<>(instances.size());
         for (String instanceValue : instances) {
-            String selectSql = String.format(QUERY_HISTORY_INTERVAL_WITH_INSTANCE_SQL, metric, table, label, metric,
-                    table, instanceValue, history2interval(history));
-
-            if (log.isDebugEnabled()) {
-                log.debug("[warehouse greptime] getHistoryIntervalMetricData sql: {}", selectSql);
-            }
+            String selectSql = String.format(QUERY_HISTORY_INTERVAL_WITH_INSTANCE_SQL, metric, table, instanceValue, metric);
 
             List<Value> values = instanceValuesMap.computeIfAbsent(instanceValue, k -> new LinkedList<>());
             try (Connection connection = hikariDataSource.getConnection();
@@ -290,7 +282,7 @@ public class DorisDataStorage extends AbstractHistoryDataStorage {
                     values.add(value);
                 }
             } catch (Exception e) {
-                    log.error("[warehouse greptime] failed to getHistoryIntervalMetricData: {}", e.getMessage(), e);
+                    log.error("[warehouse doris] failed to getHistoryIntervalMetricData: {}", e.getMessage(), e);
             }
         }
         return instanceValuesMap;}
