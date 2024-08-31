@@ -18,6 +18,7 @@
 package org.apache.hertzbeat.collector;
 
 import jakarta.annotation.PostConstruct;
+import org.apache.hertzbeat.common.script.ScriptExecutorFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
