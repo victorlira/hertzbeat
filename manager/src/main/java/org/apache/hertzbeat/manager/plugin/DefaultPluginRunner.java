@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.hertzbeat.manager.service.impl;
+package org.apache.hertzbeat.manager.plugin;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -53,5 +53,16 @@ public class DefaultPluginRunner implements PluginRunner {
         } catch (Exception e) {
             log.error("plugin execute failed", e);
         }
+    }
+
+    /**
+     * execute script
+     *
+     * @param clazz   plugin class
+     * @param execute script execution logic
+     */
+    @Override
+    public <T> void scriptExecute(Class<T> clazz, Consumer<T> execute) {
+
     }
 }
