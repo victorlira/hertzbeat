@@ -19,6 +19,7 @@ package org.apache.hertzbeat.collector.script;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.apache.hertzbeat.common.cache.CacheFactory;
 import org.apache.hertzbeat.common.constants.ScriptTypeEnum;
 import org.apache.hertzbeat.common.script.ScriptExecutor;
 import org.graalvm.polyglot.Context;
@@ -35,7 +36,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class GraalJavaScriptExecutor extends ScriptExecutor {
 
-    private final Map<String, Source> scriptMap = new ConcurrentHashMap<>();
     private final Engine engine;
 
     public GraalJavaScriptExecutor() {
@@ -44,7 +44,7 @@ public class GraalJavaScriptExecutor extends ScriptExecutor {
 
     @Override
     public Object executeScript(String scriptKey) {
-        Source source = scriptMap.get(scriptKey);
+        Source source = (Source) CacheFactory.getScriptCache().get(scriptKey);
         if (source == null) {
             throw new RuntimeException("Script not found in cache");
         }
@@ -66,7 +66,7 @@ public class GraalJavaScriptExecutor extends ScriptExecutor {
 
     @Override
     public void cleanCache() {
-        scriptMap.clear();
+        CacheFactory.getScriptCache().clear();
     }
 
     @Override
@@ -81,7 +81,7 @@ public class GraalJavaScriptExecutor extends ScriptExecutor {
         Source source = Source.create("js", wrapScript);
         context.parse(source);
         // Cache the parsed script
-        scriptMap.put(script, source);
+        CacheFactory.getScriptCache().put(script, source);
         return wrapScript;
     }
 }
