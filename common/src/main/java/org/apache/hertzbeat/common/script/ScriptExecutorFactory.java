@@ -36,35 +36,33 @@ import org.springframework.stereotype.Component;
 @Component
 public class ScriptExecutorFactory {
 
-	private final Map<String, ScriptExecutor> scriptExecutorMap = new HashMap<>();
+    private final Map<String, ScriptExecutor> scriptExecutorMap = new HashMap<>();
 
-	private final String NONE_LANGUAGE = "none";
+    @Autowired
+    private List<ScriptExecutor> scriptExecutors;
 
-	@Autowired
-	private List<ScriptExecutor> scriptExecutors;
+    @PostConstruct
+    private void init() {
+        for (ScriptExecutor executor : scriptExecutors) {
+            scriptExecutorMap.put(executor.scriptType().getDisplayName(), executor);
+        }
+    }
 
-	@PostConstruct
-	private void init() {
-		for (ScriptExecutor executor : scriptExecutors) {
-			scriptExecutorMap.put(executor.scriptType().getDisplayName(), executor);
-		}
-	}
+    public ScriptExecutor getScriptExecutor(String language) {
+        if (StringUtils.isBlank(language)) {
+            language = "none";
+        }
 
-	public ScriptExecutor getScriptExecutor(String language) {
-		if (StringUtils.isBlank(language)) {
-			language = NONE_LANGUAGE;
-		}
+        ScriptExecutor executor = scriptExecutorMap.get(language);
 
-		ScriptExecutor executor = scriptExecutorMap.get(language);
+        if (executor == null) {
+            throw new ScriptLoadException("script component failed to load");
+        }
 
-		if (executor == null) {
-			throw new ScriptLoadException("script component failed to load");
-		}
+        return executor;
+    }
 
-		return executor;
-	}
-
-	public void cleanScriptCache() {
-		this.scriptExecutorMap.forEach((key, value) -> value.cleanCache());
-	}
+    public void cleanScriptCache() {
+        this.scriptExecutorMap.forEach((key, value) -> value.cleanCache());
+    }
 }

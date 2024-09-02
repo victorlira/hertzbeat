@@ -27,11 +27,11 @@ import lombok.Getter;
  */
 public class ScriptBeanManager {
 
-	@Getter
+    @Getter
     private static final Map<String, Object> scriptBeanMap = new HashMap<>();
 
-	public static void addScriptBean(String key, Object bean) {
-		scriptBeanMap.put(key, bean);
-	}
+    public static void addScriptBean(String key, Object bean) {
+        scriptBeanMap.put(key, bean);
+    }
 
 }

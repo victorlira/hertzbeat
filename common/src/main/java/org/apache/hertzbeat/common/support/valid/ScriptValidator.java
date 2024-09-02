@@ -67,9 +67,8 @@ public class ScriptValidator {
             return false;
         }
 
-        ScriptExecutor scriptExecutor = (scriptType != null) ?
-                scriptExecutors.get(scriptType) :
-                scriptExecutors.values().iterator().next();
+        ScriptExecutor scriptExecutor = (scriptType != null)
+                ? scriptExecutors.get(scriptType) : scriptExecutors.values().iterator().next();
 
         try {
             scriptExecutor.compile(script);

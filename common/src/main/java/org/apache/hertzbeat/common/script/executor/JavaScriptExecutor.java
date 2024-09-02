@@ -23,7 +23,7 @@ import org.apache.hertzbeat.common.constants.ScriptTypeEnum;
  * This class is used to execute JavaScript code in the plugin.
  * This code references liteflow, thanks to the author Bryan.
  */
-public class JavaScriptExecutor extends JSR223ScriptExecutor {
+public class JavaScriptExecutor extends Jsr223ScriptExecutor {
     @Override
     protected String convertScript(String script) {
         return String.format("function process(){%s} process();", script);

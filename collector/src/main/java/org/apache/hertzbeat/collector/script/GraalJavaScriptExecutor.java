@@ -17,8 +17,6 @@
 
 package org.apache.hertzbeat.collector.script;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import org.apache.hertzbeat.common.cache.CacheFactory;
 import org.apache.hertzbeat.common.constants.ScriptTypeEnum;
 import org.apache.hertzbeat.common.script.ScriptExecutor;

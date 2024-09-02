@@ -160,6 +160,8 @@
         <spring-boot-starter-sureness.version>1.1.0</spring-boot-starter-sureness.version>
         <huawei.sdk.version>3.1.37</huawei.sdk.version>
         <huawei.obs.version>3.23.5</huawei.obs.version>
+
+        <js.version>23.0.5</js.version>
         
         
         <iotdb-session.version>0.13.3</iotdb-session.version>
@@ -431,6 +433,17 @@
                 <groupId>io.netty</groupId>
                 <artifactId>netty-all</artifactId>
                 <version>${netty.version}</version>
+            </dependency>
+            <!-- script -->
+            <dependency>
+                <groupId>org.graalvm.js</groupId>
+                <artifactId>js</artifactId>
+                <version>${js.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.graalvm.js</groupId>
+                <artifactId>js-scriptengine</artifactId>
+                <version>${js.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

@@ -27,18 +27,17 @@ import lombok.Setter;
 @Setter
 public class ScriptLoadException extends RuntimeException {
 
-	@Serial
-	private static final long serialVersionUID = 1L;
+    @Serial
+    private static final long serialVersionUID = 1L;
 
-	private String message;
+    private String message;
 
-	public ScriptLoadException(String message) {
-		this.message = message;
-	}
+    public ScriptLoadException(String message) {
+        this.message = message;
+    }
 
-	@Override
-	public String getMessage() {
-		return message;
-	}
-
+    @Override
+    public String getMessage() {
+        return message;
+    }
 }

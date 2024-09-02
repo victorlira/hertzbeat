@@ -35,52 +35,37 @@ import org.graalvm.polyglot.Source;
  * JSR223 script engine
  * This code references dromara/liteflow, thanks to the author Bryan.
  */
+
 @Slf4j
-public abstract class JSR223ScriptExecutor extends ScriptExecutor {
+public abstract class Jsr223ScriptExecutor extends ScriptExecutor {
 
+    private ScriptEngine scriptEngine;
 
-	private ScriptEngine scriptEngine;
+    private final Map<String, CompiledScript> compiledScriptMap = new ConcurrentHashMap<>();
 
-	private final Map<String, CompiledScript> compiledScriptMap = new ConcurrentHashMap<>();
+    protected String convertScript(String script) {
+        return script;
+    }
 
-//	@Override
-//	public ScriptExecutor init() {
-//		ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
-//		scriptEngine = scriptEngineManager.getEngineByName(this.scriptType().getEngineName());
-//		return this;
-//	}
+    @Override
+    public Object executeScript(String scriptKey) throws Exception {
 
-	protected String convertScript(String script) {
-		return script;
-	}
+        CompiledScript compiledScript = compiledScriptMap.get(scriptKey);
+        Bindings bindings = new SimpleBindings();
 
+        return compiledScript.eval(bindings);
+    }
 
+    @Override
+    public void cleanCache() {
+        compiledScriptMap.clear();
+    }
 
-
-	@Override
-	public Object executeScript(String scriptKey) throws Exception {
-//		if (!compiledScriptMap.containsKey(wrap.getNodeId())) {
-//			String errorMsg = String.format("script for node[%s] is not loaded", wrap.getNodeId());
-//			throw new ScriptLoadException(errorMsg);
-//		}
-
-		CompiledScript compiledScript = compiledScriptMap.get(scriptKey);
-		Bindings bindings = new SimpleBindings();
-
-		return compiledScript.eval(bindings);
-	}
-
-	@Override
-	public void cleanCache() {
-		compiledScriptMap.clear();
-	}
-
-	@Override
-	public Object compile(String script) throws ScriptException {
-		if(scriptEngine == null) {
-			log.error("script engine has not init");
-		}
-		return ((Compilable) scriptEngine).compile(convertScript(script));
-	}
-
+    @Override
+    public Object compile(String script) throws ScriptException {
+        if (scriptEngine == null) {
+            log.error("script engine has not init");
+        }
+        return ((Compilable) scriptEngine).compile(convertScript(script));
+    }
 }

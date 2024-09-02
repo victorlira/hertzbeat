@@ -18,7 +18,6 @@
 package org.apache.hertzbeat.common.script;
 
 import org.apache.hertzbeat.common.constants.ScriptTypeEnum;
-import org.graalvm.polyglot.Source;
 
 /**
  * script executor interface
@@ -26,23 +25,23 @@ import org.graalvm.polyglot.Source;
  */
 public abstract class ScriptExecutor {
 
-	public Object execute(String scriptKey) throws Exception{
+    public Object execute(String scriptKey) throws Exception {
         return executeScript(scriptKey);
     }
 
-	public abstract Object executeScript(String scriptKey) throws Exception;
+    public abstract Object executeScript(String scriptKey) throws Exception;
 
-	public abstract void cleanCache();
+    public abstract void cleanCache();
 
-	public abstract ScriptTypeEnum scriptType();
+    public abstract ScriptTypeEnum scriptType();
 
 
-	/**
-	 * compile script
-	 *
-	 * @param script script content
-	 * @return boolean
-	 * @throws Exception if compile failed
-	 */
-	public abstract Object compile(String script) throws Exception;
+    /**
+     * compile script
+     *
+     * @param script script content
+     * @return boolean
+     * @throws Exception if compile failed
+     */
+    public abstract Object compile(String script) throws Exception;
 }
