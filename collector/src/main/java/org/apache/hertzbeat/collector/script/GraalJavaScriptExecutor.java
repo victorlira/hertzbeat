@@ -44,24 +44,14 @@ public class GraalJavaScriptExecutor extends ScriptExecutor {
     }
 
     @Override
-    public void load(String nodeId, String script) {
-        try {
-            scriptMap.put(nodeId, Source.create("js", (CharSequence) compile(script)));
-        } catch (Exception e) {
-            String errorMsg = String.format("Script loading error for node[%s], error msg: %s", nodeId, e.getMessage());
-            throw new ScriptLoadException(errorMsg);
+    public Object executeScript(String scriptKey) {
+        Source source = scriptMap.get(scriptKey);
+        if (source == null) {
+            throw new RuntimeException("Script not found in cache");
         }
-    }
 
-    @Override
-    public void unLoad(String nodeId) {
-        scriptMap.remove(nodeId);
-    }
-
-    @Override
-    public Object executeScript(ScriptExecuteWrap wrap) {
         try (Context context = Context.newBuilder().allowAllAccess(true).engine(this.engine).build()) {
-            Value value = context.eval(scriptMap.get(wrap.getNodeId()));
+            Value value = context.eval(source);
             if (value.isBoolean()) {
                 return value.asBoolean();
             } else if (value.isNumber()) {
@@ -88,9 +78,9 @@ public class GraalJavaScriptExecutor extends ScriptExecutor {
     @Override
     public Object compile(String script) throws Exception {
         String wrapScript = String.format("function process(){ %s } process();", script);
-        try (Context context = Context.newBuilder().allowAllAccess(true).engine(engine).build()) {
-            context.parse(Source.create("js", wrapScript));
-        }
+        Source source = Source.create("js", wrapScript);
+        // Cache the parsed script
+        scriptMap.put(script, source);
         return wrapScript;
     }
 }

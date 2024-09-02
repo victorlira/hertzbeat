@@ -29,6 +29,7 @@ import javax.script.SimpleBindings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hertzbeat.common.script.ScriptExecutor;
 import org.apache.hertzbeat.common.support.exception.ScriptLoadException;
+import org.graalvm.polyglot.Source;
 
 /**
  * JSR223 script engine
@@ -53,31 +54,17 @@ public abstract class JSR223ScriptExecutor extends ScriptExecutor {
 		return script;
 	}
 
-	@Override
-	public void load(String nodeId, String script) {
-		try {
-			compiledScriptMap.put(nodeId, (CompiledScript) compile(script));
-		}
-		catch (Exception e) {
-			String errorMsg = String.format("script loading error for node[%s], error msg:%s", nodeId, e.getMessage());
-			throw new ScriptLoadException(errorMsg);
-		}
-	}
 
-	@Override
-	public void unLoad(String nodeId) {
-		compiledScriptMap.remove(nodeId);
-	}
 
 
 	@Override
-	public Object executeScript(ScriptExecuteWrap wrap) throws Exception {
-		if (!compiledScriptMap.containsKey(wrap.getNodeId())) {
-			String errorMsg = String.format("script for node[%s] is not loaded", wrap.getNodeId());
-			throw new ScriptLoadException(errorMsg);
-		}
+	public Object executeScript(String scriptKey) throws Exception {
+//		if (!compiledScriptMap.containsKey(wrap.getNodeId())) {
+//			String errorMsg = String.format("script for node[%s] is not loaded", wrap.getNodeId());
+//			throw new ScriptLoadException(errorMsg);
+//		}
 
-		CompiledScript compiledScript = compiledScriptMap.get(wrap.getNodeId());
+		CompiledScript compiledScript = compiledScriptMap.get(scriptKey);
 		Bindings bindings = new SimpleBindings();
 
 		return compiledScript.eval(bindings);
