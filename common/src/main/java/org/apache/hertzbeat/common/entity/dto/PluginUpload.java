@@ -22,6 +22,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.hertzbeat.common.entity.manager.Collector;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -40,4 +41,8 @@ public class PluginUpload {
 
     @NotNull(message = "Enable status is required")
     private Boolean enableStatus;
+
+//    @NotNull(message = "Collector is required")
+    private Collector collector;
+
 }

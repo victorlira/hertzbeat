@@ -60,7 +60,7 @@ public class PluginController {
     }
 
 
-    @GetMapping()
+    @GetMapping
     @Operation(summary = "Get Plugins information", description = "Obtain plugins information based on conditions")
     public ResponseEntity<Message<Page<PluginMetadata>>> getPlugins(
         @Parameter(description = "plugin name search", example = "status") @RequestParam(required = false) String search,
@@ -70,7 +70,7 @@ public class PluginController {
         return ResponseEntity.ok(Message.success(alertPage));
     }
 
-    @DeleteMapping()
+    @DeleteMapping
     @Operation(summary = "Delete plugins based on ID", description = "Delete plugins based on ID")
     public ResponseEntity<Message<Void>> deletePlugins(
         @Parameter(description = "Plugin IDs ", example = "6565463543") @RequestParam(required = false) List<Long> ids) {
