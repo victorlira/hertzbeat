@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.hertzbeat.common.constants.ScriptTypeEnum;
 import org.apache.hertzbeat.common.script.ScriptExecutor;
-import org.apache.hertzbeat.common.support.exception.ScriptLoadException;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Engine;
 import org.graalvm.polyglot.Source;
@@ -78,7 +77,9 @@ public class GraalJavaScriptExecutor extends ScriptExecutor {
     @Override
     public Object compile(String script) throws Exception {
         String wrapScript = String.format("function process(){ %s } process();", script);
+        Context context = Context.newBuilder().allowAllAccess(true).engine(engine).build();
         Source source = Source.create("js", wrapScript);
+        context.parse(source);
         // Cache the parsed script
         scriptMap.put(script, source);
         return wrapScript;

@@ -22,8 +22,6 @@ package org.apache.hertzbeat.collector.script;
 import org.apache.hertzbeat.common.constants.ScriptTypeEnum;
 import org.apache.hertzbeat.common.script.ScriptExecutor;
 import org.apache.hertzbeat.common.support.valid.ScriptValidator;
-import org.graalvm.polyglot.Context;
-import org.graalvm.polyglot.Source;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
