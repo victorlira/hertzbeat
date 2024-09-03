@@ -28,8 +28,6 @@ import javax.script.ScriptException;
 import javax.script.SimpleBindings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hertzbeat.common.script.ScriptExecutor;
-import org.apache.hertzbeat.common.support.exception.ScriptLoadException;
-import org.graalvm.polyglot.Source;
 
 /**
  * JSR223 script engine
