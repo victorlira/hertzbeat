@@ -58,6 +58,7 @@ import org.apache.hertzbeat.common.entity.manager.PluginMetadata;
 import org.apache.hertzbeat.common.entity.plugin.PluginConfig;
 import org.apache.hertzbeat.common.entity.plugin.PluginContext;
 import org.apache.hertzbeat.common.support.exception.CommonException;
+import org.apache.hertzbeat.common.util.SnowFlakeIdGenerator;
 import org.apache.hertzbeat.manager.dao.PluginItemDao;
 import org.apache.hertzbeat.manager.dao.PluginMetadataDao;
 import org.apache.hertzbeat.manager.dao.PluginParamDao;
@@ -283,7 +284,7 @@ public class PluginServiceImpl implements PluginService {
         if (fileName == null) {
             throw new CommonException("Failed to upload plugin");
         }
-        fileName = UUID.randomUUID().toString().replace("-", "") + "_" + fileName;
+        fileName = SnowFlakeIdGenerator.generateId() + "_" + fileName;
         File destFile = new File(extLibDir, fileName);
         FileUtils.createParentDirectories(destFile);
         pluginUpload.getJarFile().transferTo(destFile);
