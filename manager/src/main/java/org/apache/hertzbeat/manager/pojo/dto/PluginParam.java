@@ -27,6 +27,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
+import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Min;
@@ -81,8 +82,7 @@ public class PluginParam {
      * Param Value
      */
     @Schema(title = "parameter values", example = "8080", accessMode = READ_WRITE)
-    @Size(max = 8126)
-    @Column(length = 8126)
+    @Lob
     private String paramValue;
 
     /**

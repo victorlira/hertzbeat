@@ -181,8 +181,8 @@
     <form nz-form #form="ngForm">
       <ng-container *ngFor="let paramDefine of paramDefines; let i = index">
         <nz-form-item>
-          <nz-form-label nzSpan="7" [nzRequired]="paramDefine.required" [nzFor]="paramDefine.field">{{ paramDefine.name }}</nz-form-label>
-          <nz-form-control nzSpan="8" [nzErrorTip]="'validation.required' | i18n">
+          <nz-form-label nzSpan="5" [nzRequired]="paramDefine.required" [nzFor]="paramDefine.field">{{ paramDefine.name }}</nz-form-label>
+          <nz-form-control nzSpan="24" [nzErrorTip]="'validation.required' | i18n">
             <app-form-field [item]="paramDefine" [name]="paramDefine.field" [(ngModel)]="params[paramDefine.field].paramValue" />
           </nz-form-control>
         </nz-form-item>
