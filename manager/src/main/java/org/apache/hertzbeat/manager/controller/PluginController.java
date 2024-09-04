@@ -96,7 +96,7 @@ public class PluginController {
     }
 
     @PostMapping("/params")
-    @Operation(summary = "get param define", description = "get param define by jar path")
+    @Operation(summary = "save param define", description = "save param define")
     public ResponseEntity<Message<Boolean>> saveParams(@RequestBody List<PluginParam> pluginParams) {
         pluginService.savePluginParam(pluginParams);
         return ResponseEntity.ok(Message.success(true));

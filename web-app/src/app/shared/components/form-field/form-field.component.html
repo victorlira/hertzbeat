@@ -169,3 +169,16 @@
     [placeholder]="item.placeholder ? item.placeholder : ''"
   ></textarea>
 </nz-textarea-count>
+
+<nz-code-editor
+  *ngIf="item.type === 'script'"
+  [(ngModel)]="value"
+  (ngModelChange)="onChange($event)"
+  [nzEditorOption]="{
+    language: 'javascript',
+    theme: 'vs-dark',
+    folding: true,
+    automaticLayout: true
+  }"
+  style="width: 100%; height: 300px"
+></nz-code-editor>

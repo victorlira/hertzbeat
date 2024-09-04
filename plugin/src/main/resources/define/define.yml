@@ -12,3 +12,48 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+params:
+  - field: type
+    name:
+      zh-CN: 脚本类型
+      en-US: Script Type
+    type: radio
+    required: true
+    options:
+      - label: Groovy
+        value: Groovy
+      - label: Shell
+        value: Shell
+      - label: JavaScript
+        value: JavaScript
+      - label: Java
+        value: Java
+      - label: QLExpress
+        value: QLExpress
+      - label: Python
+        value: Python
+      - label: Lua
+        value: Lua
+      - label: Aviator
+        value: Aviator
+      - label: Kotlin
+        value: Kotlin
+  - field: script
+    name:
+      zh-CN: 脚本内容
+      en-US: Script Content
+    type: script
+    required: true
+  - field: collector-config
+    name:
+      zh-CN: 采集器
+      en-US: Collector
+    type: collectors-selection
+    required: true
+  - field: alert-rule
+    name:
+      zh-CN: 阈值规则ID
+      en-US: Alert Rule ID
+    type: text
+    required: true

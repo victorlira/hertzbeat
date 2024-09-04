@@ -24,6 +24,7 @@ import { I18nElsePipe } from './pipe/i18n-else.pipe';
 import { TimezonePipe } from './pipe/timezone.pipe';
 import { SHARED_DELON_MODULES } from './shared-delon.module';
 import { SHARED_ZORRO_MODULES } from './shared-zorro.module';
+import {NzCodeEditorComponent} from "ng-zorro-antd/code-editor";
 
 const ThirdModules: Array<Type<void>> = [];
 const COMPONENTS: Array<Type<void>> = [
@@ -39,24 +40,25 @@ const COMPONENTS: Array<Type<void>> = [
 const DIRECTIVES: Array<Type<void>> = [TimezonePipe, I18nElsePipe, ElapsedTimePipe];
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    RouterModule,
-    ReactiveFormsModule,
-    AlainThemeModule.forChild(),
-    DelonACLModule,
-    DelonFormModule,
-    ...SHARED_DELON_MODULES,
-    ...SHARED_ZORRO_MODULES,
-    ...ThirdModules,
-    NzBreadCrumbModule,
-    NzTagModule,
-    NzDividerComponent,
-    NzRadioGroupComponent,
-    NzRadioComponent,
-    NzSwitchComponent
-  ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        RouterModule,
+        ReactiveFormsModule,
+        AlainThemeModule.forChild(),
+        DelonACLModule,
+        DelonFormModule,
+        ...SHARED_DELON_MODULES,
+        ...SHARED_ZORRO_MODULES,
+        ...ThirdModules,
+        NzBreadCrumbModule,
+        NzTagModule,
+        NzDividerComponent,
+        NzRadioGroupComponent,
+        NzRadioComponent,
+        NzSwitchComponent,
+        NzCodeEditorComponent
+    ],
   declarations: [...COMPONENTS, ...DIRECTIVES, HelpMessageShowComponent],
   exports: [
     CommonModule,

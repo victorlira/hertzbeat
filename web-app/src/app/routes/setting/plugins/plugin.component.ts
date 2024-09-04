@@ -62,6 +62,7 @@ export class SettingPluginsComponent implements OnInit {
   search: string | undefined;
   fileList: NzUploadFile[] = [];
   pluginForm: FormGroup;
+  value!: string;
 
   ngOnInit(): void {
     this.loadPluginsTable();
@@ -316,6 +317,7 @@ export class SettingPluginsComponent implements OnInit {
   }
 
   onEditPluginParamDefineModalOk() {
+    console.log(this.value);
     const savePluginParamDefine$ = this.pluginService
       .savePluginParamDefine(Object.values(this.params))
       .pipe(
