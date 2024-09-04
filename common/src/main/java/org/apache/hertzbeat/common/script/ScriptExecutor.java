@@ -17,8 +17,6 @@
 
 package org.apache.hertzbeat.common.script;
 
-import org.apache.hertzbeat.common.constants.ScriptTypeEnum;
-
 /**
  * script executor interface
  * This code references dromara/liteflow, thanks to the author Bryan.
@@ -33,7 +31,7 @@ public abstract class ScriptExecutor {
 
     public abstract void cleanCache();
 
-    public abstract ScriptTypeEnum scriptType();
+    public abstract String scriptType();
 
 
     /**

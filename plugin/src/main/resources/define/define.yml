@@ -22,38 +22,38 @@ params:
     required: true
     options:
       - label: Groovy
-        value: Groovy
+        value: groovy
       - label: Shell
-        value: Shell
+        value: shell
       - label: JavaScript
-        value: JavaScript
+        value: javascript
       - label: Java
-        value: Java
+        value: java
       - label: QLExpress
-        value: QLExpress
+        value: qlexpress
       - label: Python
-        value: Python
+        value: python
       - label: Lua
-        value: Lua
+        value: lua
       - label: Aviator
-        value: Aviator
+        value: aviator
       - label: Kotlin
-        value: Kotlin
+        value: kotlin
   - field: script
     name:
       zh-CN: 脚本内容
       en-US: Script Content
     type: script
     required: true
-  - field: collector-config
-    name:
-      zh-CN: 采集器
-      en-US: Collector
-    type: collectors-selection
-    required: true
-  - field: alert-rule
-    name:
-      zh-CN: 阈值规则ID
-      en-US: Alert Rule ID
-    type: text
-    required: true
+#  - field: collector-config
+#    name:
+#      zh-CN: 采集器
+#      en-US: Collector
+#    type: collectors-selection
+#    required: true
+#  - field: alert-rule
+#    name:
+#      zh-CN: 阈值规则ID
+#      en-US: Alert Rule ID
+#    type: text
+#    required: true

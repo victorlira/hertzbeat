@@ -23,7 +23,6 @@ import { AbstractControl, ControlValueAccessor, NG_VALIDATORS, NG_VALUE_ACCESSOR
 @Component({
   selector: 'app-form-field',
   templateUrl: './form-field.component.html',
-  styleUrls: ['./form-field.component.less'],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

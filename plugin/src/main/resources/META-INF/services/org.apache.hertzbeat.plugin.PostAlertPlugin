@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.hertzbeat.plugin.impl.ScriptPluginImpl
+org.apache.hertzbeat.plugin.impl.ScriptExecutorPluginImpl

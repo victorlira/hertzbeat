@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.hertzbeat.common.constants.ScriptTypeEnum;
 import org.apache.hertzbeat.common.script.ScriptExecutor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -34,7 +33,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ScriptValidator {
 
-    private final Map<ScriptTypeEnum, ScriptExecutor> scriptExecutors = new ConcurrentHashMap<>();
+    private final Map<String, ScriptExecutor> scriptExecutors = new ConcurrentHashMap<>();
 
     @Autowired
     public ScriptValidator(List<ScriptExecutor> scriptExecutorList) {
@@ -50,7 +49,7 @@ public class ScriptValidator {
      * @param scriptType scriptType
      * @return boolean
      */
-    private boolean validateScript(String script, ScriptTypeEnum scriptType) {
+    private boolean validateScript(String script, String scriptType) {
 
         if (scriptExecutors.isEmpty()) {
             log.error("No script modules loaded.");
@@ -92,7 +91,7 @@ public class ScriptValidator {
      * @param scriptType scriptType
      * @return boolean
      */
-    public boolean validate(String script, ScriptTypeEnum scriptType) {
+    public boolean validate(String script, String scriptType) {
         return validateScript(script, scriptType);
     }
 
@@ -100,8 +99,8 @@ public class ScriptValidator {
      * @param scripts scripts
      * @return boolean
      */
-    public boolean validate(Map<ScriptTypeEnum, String> scripts) {
-        for (Map.Entry<ScriptTypeEnum, String> script : scripts.entrySet()) {
+    public boolean validate(Map<String, String> scripts) {
+        for (Map.Entry<String, String> script : scripts.entrySet()) {
             if (!validate(script.getValue(), script.getKey())) {
                 return false;
             }

@@ -44,7 +44,7 @@ public class ScriptExecutorFactory {
     @PostConstruct
     private void init() {
         for (ScriptExecutor executor : scriptExecutors) {
-            scriptExecutorMap.put(executor.scriptType().getDisplayName(), executor);
+            scriptExecutorMap.put(executor.scriptType(), executor);
         }
     }
 

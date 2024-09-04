@@ -18,7 +18,7 @@
 package org.apache.hertzbeat.collector.script;
 
 import org.apache.hertzbeat.common.cache.CacheFactory;
-import org.apache.hertzbeat.common.constants.ScriptTypeEnum;
+import org.apache.hertzbeat.common.constants.ScriptTypeConstants;
 import org.apache.hertzbeat.common.script.ScriptExecutor;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Engine;
@@ -68,8 +68,8 @@ public class GraalJavaScriptExecutor extends ScriptExecutor {
     }
 
     @Override
-    public ScriptTypeEnum scriptType() {
-        return ScriptTypeEnum.JS;
+    public String scriptType() {
+        return ScriptTypeConstants.JAVASCRIPT;
     }
 
     @Override

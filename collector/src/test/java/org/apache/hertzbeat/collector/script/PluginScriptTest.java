@@ -19,7 +19,7 @@
 
 package org.apache.hertzbeat.collector.script;
 
-import org.apache.hertzbeat.common.constants.ScriptTypeEnum;
+import org.apache.hertzbeat.common.constants.ScriptTypeConstants;
 import org.apache.hertzbeat.common.script.ScriptExecutor;
 import org.apache.hertzbeat.common.support.valid.ScriptValidator;
 import org.junit.jupiter.api.Assertions;
@@ -76,8 +76,8 @@ class PluginScriptTest {
 
         Assertions.assertTrue(scriptValidator.validate(correctScript));
         Assertions.assertFalse(scriptValidator.validate(wrongScript));
-        Assertions.assertTrue(scriptValidator.validate(correctScript, ScriptTypeEnum.JS));
-        Assertions.assertFalse(scriptValidator.validate(correctScript, ScriptTypeEnum.JAVA));
+        Assertions.assertTrue(scriptValidator.validate(correctScript, ScriptTypeConstants.JAVASCRIPT));
+        Assertions.assertFalse(scriptValidator.validate(correctScript, ScriptTypeConstants.JAVA));
     }
 
     @Test

@@ -15,22 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.hertzbeat.common.script.executor;
-
-import org.apache.hertzbeat.common.constants.ScriptTypeConstants;
+package org.apache.hertzbeat.common.constants;
 
 /**
- * This class is used to execute JavaScript code in the plugin.
- * This code references liteflow, thanks to the author Bryan.
+ *  ScriptTypeConstants
  */
-public class JavaScriptExecutor extends Jsr223ScriptExecutor {
-    @Override
-    protected String convertScript(String script) {
-        return String.format("function process(){%s} process();", script);
-    }
+public interface ScriptTypeConstants {
 
-    @Override
-    public String scriptType() {
-        return ScriptTypeConstants.JAVASCRIPT;
-    }
+    String GROOVY = "groovy";
+
+    String SHELL = "shell";
+
+    String JAVASCRIPT = "javascript";
+
+    String JAVA = "java";
+
+    String QLEXPRESS = "qlexpress";
+
+    String PYTHON = "python";
+
+    String LUA = "lua";
+
+    String AVIATOR = "aviator";
+
+    String KOTLIN = "kotlin";
+
 }
