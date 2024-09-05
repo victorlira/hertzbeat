@@ -15,22 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.hertzbeat.common.script.executor;
+package org.apache.hertzbeat.common.util;
 
-import org.apache.hertzbeat.common.constants.ScriptTypeConstants;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
- * This class is used to execute JavaScript code in the plugin.
- * This code references liteflow, thanks to the author Bryan.
+ * Script Util
  */
-public class JavaScriptExecutor extends Jsr223ScriptExecutor {
-    @Override
-    protected String convertScript(String script) {
-        return String.format("function process(){%s} process();", script);
-    }
+public class ScriptUtil {
 
-    @Override
-    public String scriptType() {
-        return ScriptTypeConstants.JAVASCRIPT;
+    /**
+     *
+     * @param script script
+     * @return key
+     */
+    public static String generateScriptKey(String script) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] hashBytes = md.digest(script.getBytes());
+            StringBuilder sb = new StringBuilder();
+            for (byte b : hashBytes) {
+                sb.append(String.format("%02x", b));
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("MD5 algorithm not found", e);
+        }
     }
 }

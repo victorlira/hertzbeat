@@ -19,9 +19,13 @@
 
 package org.apache.hertzbeat.common.script.executor;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.hertzbeat.common.cache.CacheFactory;
 import org.apache.hertzbeat.common.constants.ScriptTypeConstants;
 import org.apache.hertzbeat.common.script.ScriptExecutor;
+import org.apache.hertzbeat.common.util.ScriptUtil;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Engine;
 import org.graalvm.polyglot.Source;
@@ -34,19 +38,28 @@ import org.springframework.stereotype.Component;
  */
 
 @Component
+@Slf4j
 public class GraalJavaScriptExecutor extends ScriptExecutor {
 
     private final Engine engine;
 
     public GraalJavaScriptExecutor() {
+        log.info("Initializing GraalJavaScriptExecutor");
         this.engine = Engine.create();
     }
 
     @Override
-    public Object executeScript(String scriptKey) {
+    public Object executeScript(String script) {
+        String scriptKey = ScriptUtil.generateScriptKey(script);
         Source source = (Source) CacheFactory.getScriptCache().get(scriptKey);
         if (source == null) {
-            throw new RuntimeException("Script not found in cache");
+            log.info("Script not found in cache, compiling...");
+            try {
+                compile(script);
+                source = (Source) CacheFactory.getScriptCache().get(scriptKey);
+            } catch (Exception e) {
+                throw new RuntimeException("Error compiling script", e);
+            }
         }
 
         try (Context context = Context.newBuilder().allowAllAccess(true).engine(this.engine).build()) {
@@ -76,12 +89,15 @@ public class GraalJavaScriptExecutor extends ScriptExecutor {
 
     @Override
     public Object compile(String script) throws Exception {
+        String scriptKey = ScriptUtil.generateScriptKey(script);
         String wrapScript = String.format("function process(){ %s } process();", script);
         Context context = Context.newBuilder().allowAllAccess(true).engine(engine).build();
         Source source = Source.create("js", wrapScript);
         context.parse(source);
-        // Cache the parsed script
-        CacheFactory.getScriptCache().put(script, source);
+        CacheFactory.getScriptCache().put(scriptKey, source);
+        log.info("Javascript script has been cached with key: {}", scriptKey);
         return wrapScript;
     }
+
+
 }

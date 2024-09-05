@@ -19,7 +19,6 @@
 
 package org.apache.hertzbeat.plugin.impl;
 
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -27,39 +26,58 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.hertzbeat.common.entity.alerter.Alert;
 import org.apache.hertzbeat.common.entity.plugin.PluginContext;
 import org.apache.hertzbeat.common.script.ScriptExecutor;
+import org.apache.hertzbeat.common.support.SpringContextHolder;
 import org.apache.hertzbeat.plugin.PostAlertPlugin;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
 public class ScriptExecutorPluginImpl implements PostAlertPlugin {
 
-    private final Map<String, ScriptExecutor> scriptExecutors;
+    public ScriptExecutorPluginImpl() {}
 
-    @Autowired
-    public ScriptExecutorPluginImpl(List<ScriptExecutor> executors) {
-        this.scriptExecutors = executors.stream()
+    private Map<String, ScriptExecutor> getScriptExecutors() {
+        ApplicationContext context = SpringContextHolder.getApplicationContext();
+        Map<String, ScriptExecutor> beansOfType = context.getBeansOfType(ScriptExecutor.class);
+        return beansOfType.values().stream()
                 .collect(Collectors.toMap(ScriptExecutor::scriptType, Function.identity()));
     }
 
+    public ScriptExecutor getScriptExecutorByType(String type) {
+        return getScriptExecutors().get(type);
+    }
+
+
     @Override
     public void execute(Alert alert, PluginContext pluginContext) {
-        String scriptType = pluginContext.param().getString("type", null);
+        log.info("Executing ScriptExecutorPluginImpl");
+        String type = pluginContext.param().getString("type", null);
+        if (type == null) {
+            log.warn("Script type is null");
+            return;
+        }
+
+        ScriptExecutor scriptExecutor = getScriptExecutorByType(type);
+        if (scriptExecutor == null) {
+            log.warn("No executor found for script type: {}", type);
+            return;
+        }
 
         String script = pluginContext.param().getString("script", null);
-        if (script != null && scriptType != null) {
-            ScriptExecutor scriptExecutor = scriptExecutors.get(scriptType);
-            if (scriptExecutor == null) {
-                throw new IllegalArgumentException("Unsupported script type: " + scriptType);
-            }
-            try {
-                Object result = scriptExecutor.execute(script);
-                log.info("Script execution result: {}", result);
-            } catch (Exception e) {
-                log.error("Failed to execute script: {}", script, e);
-                throw new RuntimeException(e);
-            }
+        if (script == null) {
+            log.warn("Script is null");
+            return;
+        }
+
+        try {
+            Object result = scriptExecutor.execute(script);
+            log.info("Script execution result: {}", result);
+        } catch (Exception e) {
+            log.error("Failed to execute script: {}", script, e);
+            throw new RuntimeException("Script execution failed", e);
         }
     }
+
 }
+
