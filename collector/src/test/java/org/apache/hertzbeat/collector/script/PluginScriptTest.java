@@ -21,6 +21,7 @@ package org.apache.hertzbeat.collector.script;
 
 import org.apache.hertzbeat.common.constants.ScriptTypeConstants;
 import org.apache.hertzbeat.common.script.ScriptExecutor;
+import org.apache.hertzbeat.common.script.executor.GraalJavaScriptExecutor;
 import org.apache.hertzbeat.common.support.valid.ScriptValidator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
