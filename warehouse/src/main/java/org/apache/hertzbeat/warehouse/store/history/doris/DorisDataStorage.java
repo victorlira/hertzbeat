@@ -91,33 +91,28 @@ public class DorisDataStorage extends AbstractHistoryDataStorage {
     private static final String QUERY_INSTANCE_SQL = "SELECT DISTINCT label FROM %s WHERE ts >= now() - interval 1 WEEK and metrics = '%s';";
 
     private static final String QUERY_HISTORY_INTERVAL_WITH_INSTANCE_SQL = """
-            WITH data AS (
+            SELECT
+                CAST(UNIX_TIMESTAMP(time_bucket) * 1000 AS BIGINT) AS time_bucket,
+                first_value(his_value, 1) OVER (PARTITION BY time_bucket ORDER BY ts ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS origin,
+                avg(his_value) AS avg,
+                min(his_value) AS min,
+                max(his_value) AS max
+            FROM
+                (
                 SELECT
-                    CAST(UNIX_TIMESTAMP(ts) * 1000 as bigint) as ts,
-                    CAST(v['%s'] AS DOUBLE) AS value
+                    ts,
+                    CAST(v['%s'] AS DOUBLE) AS his_value,
+                    DATE_TRUNC (ts,'HOUR') - INTERVAL (HOUR(ts)%4) HOUR AS time_bucket
                 FROM
                     %s
                 WHERE
-                    label = '%s'
-                    AND ts >= DATE_SUB(NOW(), INTERVAL 4 HOUR)
-                    AND v['%s'] IS NOT NULL
-            ),
-            first_value_cte AS (
-                SELECT
-                    ts,
-                    value,
-                    FIRST_VALUE(value) OVER (ORDER BY ts ASC) AS first
-                FROM
-                    data
-            )
-            SELECT
-                MIN(ts) AS first_ts,
-                MIN(first) AS first_value,
-                AVG(value) AS avg,
-                MIN(value) AS min,
-                MAX(value) AS max
-            FROM
-                first_value_cte;
+                    ts >= now() - INTERVAL 1 MONTH and label = '%S'
+                ) AS subquery
+            GROUP BY
+                time_bucket,
+                origin
+            ORDER BY
+                time_bucket;
             """;
 
 
@@ -261,7 +256,7 @@ public class DorisDataStorage extends AbstractHistoryDataStorage {
         }
         Map<String, List<Value>> instanceValuesMap = new HashMap<>(instances.size());
         for (String instanceValue : instances) {
-            String selectSql = String.format(QUERY_HISTORY_INTERVAL_WITH_INSTANCE_SQL, metric, table, instanceValue, metric);
+            String selectSql = String.format(QUERY_HISTORY_INTERVAL_WITH_INSTANCE_SQL, metric, table, instanceValue);
 
             List<Value> values = instanceValuesMap.computeIfAbsent(instanceValue, k -> new LinkedList<>());
             try (Connection connection = hikariDataSource.getConnection();
