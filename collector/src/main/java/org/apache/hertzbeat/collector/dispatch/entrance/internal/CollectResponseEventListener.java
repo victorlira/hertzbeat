@@ -31,4 +31,11 @@ public interface CollectResponseEventListener extends EventListener {
      * @param responseMetrics Response Metrics
      */
     default void response(List<CollectRep.MetricsData> responseMetrics) {}
+
+    /**
+     * Script execution result notification
+     * @param scriptOutput Script output
+     */
+    default void scriptResponse(String scriptOutput) {}
+
 }

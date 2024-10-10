@@ -19,8 +19,7 @@
 
 package org.apache.hertzbeat.common.script.executor;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hertzbeat.common.cache.CacheFactory;
 import org.apache.hertzbeat.common.constants.ScriptTypeConstants;

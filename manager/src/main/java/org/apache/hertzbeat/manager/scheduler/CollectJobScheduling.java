@@ -20,6 +20,7 @@ package org.apache.hertzbeat.manager.scheduler;
 import java.util.List;
 import org.apache.hertzbeat.common.entity.job.Job;
 import org.apache.hertzbeat.common.entity.message.CollectRep;
+import org.apache.hertzbeat.common.entity.plugin.Script;
 
 /**
  * Collection job management provides api interface
@@ -42,6 +43,14 @@ public interface CollectJobScheduling {
     List<CollectRep.MetricsData> collectSyncJobData(Job job, String collector);
 
     /**
+     * Execute a one-time script task and get the script execution result
+     * @param script script details
+     * @param collector collector identity name
+     * @return String script execution result
+     */
+    String executeSyncScript(Script script, String collector);
+
+                             /**
      * Issue periodic asynchronous collection tasks
      * @param job Collect task details
      * @param collector collector identity name

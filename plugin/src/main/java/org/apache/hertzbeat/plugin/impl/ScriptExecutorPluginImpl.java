@@ -37,21 +37,8 @@ public class ScriptExecutorPluginImpl implements PostAlertPlugin {
 
     public ScriptExecutorPluginImpl() {}
 
-    private Map<String, ScriptExecutor> getScriptExecutors() {
-        ApplicationContext context = SpringContextHolder.getApplicationContext();
-        Map<String, ScriptExecutor> beansOfType = context.getBeansOfType(ScriptExecutor.class);
-        return beansOfType.values().stream()
-                .collect(Collectors.toMap(ScriptExecutor::scriptType, Function.identity()));
-    }
-
-    public ScriptExecutor getScriptExecutorByType(String type) {
-        return getScriptExecutors().get(type);
-    }
-
-
     @Override
     public void execute(Alert alert, PluginContext pluginContext) {
-        log.info("Executing ScriptExecutorPluginImpl");
         String type = pluginContext.param().getString("type", null);
         if (type == null) {
             log.warn("Script type is null");
@@ -77,6 +64,17 @@ public class ScriptExecutorPluginImpl implements PostAlertPlugin {
             log.error("Failed to execute script: {}", script, e);
             throw new RuntimeException("Script execution failed", e);
         }
+    }
+
+    public ScriptExecutor getScriptExecutorByType(String type) {
+        return getScriptExecutors().get(type);
+    }
+
+    private Map<String, ScriptExecutor> getScriptExecutors() {
+        ApplicationContext context = SpringContextHolder.getApplicationContext();
+        Map<String, ScriptExecutor> beansOfType = context.getBeansOfType(ScriptExecutor.class);
+        return beansOfType.values().stream()
+                .collect(Collectors.toMap(ScriptExecutor::scriptType, Function.identity()));
     }
 
 }

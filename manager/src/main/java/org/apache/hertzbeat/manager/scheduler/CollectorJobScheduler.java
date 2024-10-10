@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -44,6 +45,7 @@ import org.apache.hertzbeat.common.entity.manager.Param;
 import org.apache.hertzbeat.common.entity.manager.ParamDefine;
 import org.apache.hertzbeat.common.entity.message.ClusterMsg;
 import org.apache.hertzbeat.common.entity.message.CollectRep;
+import org.apache.hertzbeat.common.entity.plugin.Script;
 import org.apache.hertzbeat.common.util.JsonUtil;
 import org.apache.hertzbeat.common.util.SnowFlakeIdGenerator;
 import org.apache.hertzbeat.manager.dao.CollectorDao;
@@ -364,6 +366,35 @@ public class CollectorJobScheduler implements CollectorScheduling, CollectJobSch
             }
         }
         return metricsData;
+    }
+
+    /**
+     * Execute a one-time script task and get the script execution result
+     *
+     * @param script    script details
+     * @param collector collector identity name
+     * @return String script execution result
+     */
+    @Override
+    public String executeSyncScript(Script script, String collector) {
+        ConsistentHash.Node node = consistentHash.getNode(collector);
+        ClusterMsg.Message message = ClusterMsg.Message.newBuilder()
+                .setType(ClusterMsg.MessageType.SCRIPT_PLUGIN)
+                .setDirection(ClusterMsg.Direction.REQUEST)
+                .setMsg(JsonUtil.toJson(script))
+                .build();
+        AtomicReference<String> response = new AtomicReference<>("");
+        boolean result = this.manageServer.sendMsg(node.getIdentity(), message);
+        if (result) {
+            CollectResponseEventListener listener = new CollectResponseEventListener() {
+                @Override
+                public void scriptResponse(String scriptOutput) {
+                    response.set(scriptOutput);
+                }
+            };
+            eventListeners.put(script.getId(), listener);
+        }
+        return response.get();
     }
 
     @Override

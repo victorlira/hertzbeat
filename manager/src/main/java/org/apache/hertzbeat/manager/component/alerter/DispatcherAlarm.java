@@ -21,13 +21,20 @@ import com.google.common.collect.Maps;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hertzbeat.alert.AlerterWorkerPool;
 import org.apache.hertzbeat.common.entity.alerter.Alert;
 import org.apache.hertzbeat.common.entity.manager.NoticeReceiver;
 import org.apache.hertzbeat.common.entity.manager.NoticeRule;
 import org.apache.hertzbeat.common.entity.manager.NoticeTemplate;
+import org.apache.hertzbeat.common.entity.plugin.PluginContext;
+import org.apache.hertzbeat.common.entity.plugin.Script;
 import org.apache.hertzbeat.common.queue.CommonDataQueue;
+import org.apache.hertzbeat.common.script.ScriptExecutor;
+import org.apache.hertzbeat.common.support.SpringContextHolder;
+import org.apache.hertzbeat.manager.scheduler.CollectorJobScheduler;
 import org.apache.hertzbeat.manager.service.NoticeConfigService;
 import org.apache.hertzbeat.manager.support.exception.AlertNoticeException;
 import org.apache.hertzbeat.manager.support.exception.IgnoreException;
@@ -35,6 +42,7 @@ import org.apache.hertzbeat.plugin.PostAlertPlugin;
 import org.apache.hertzbeat.plugin.Plugin;
 import org.apache.hertzbeat.plugin.runner.PluginRunner;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 /**
@@ -52,18 +60,21 @@ public class DispatcherAlarm implements InitializingBean {
     private final AlertStoreHandler alertStoreHandler;
     private final Map<Byte, AlertNotifyHandler> alertNotifyHandlerMap;
     private final PluginRunner pluginRunner;
+    private final CollectorJobScheduler collectorJobScheduler;
 
     public DispatcherAlarm(AlerterWorkerPool workerPool,
-        CommonDataQueue dataQueue,
-        NoticeConfigService noticeConfigService,
-        AlertStoreHandler alertStoreHandler,
-        List<AlertNotifyHandler> alertNotifyHandlerList, PluginRunner pluginRunner) {
+                           CommonDataQueue dataQueue,
+                           NoticeConfigService noticeConfigService,
+                           AlertStoreHandler alertStoreHandler,
+                           List<AlertNotifyHandler> alertNotifyHandlerList, PluginRunner pluginRunner,
+                           CollectorJobScheduler collectorJobScheduler) {
         this.workerPool = workerPool;
         this.dataQueue = dataQueue;
         this.noticeConfigService = noticeConfigService;
         this.alertStoreHandler = alertStoreHandler;
         this.pluginRunner = pluginRunner;
         alertNotifyHandlerMap = Maps.newHashMapWithExpectedSize(alertNotifyHandlerList.size());
+        this.collectorJobScheduler = collectorJobScheduler;
         alertNotifyHandlerList.forEach(r -> alertNotifyHandlerMap.put(r.type(), r));
     }
 
@@ -134,7 +145,13 @@ public class DispatcherAlarm implements InitializingBean {
                         // Execute the plugin if enable (Compatible with old version plugins, will be removed in later versions)
                         pluginRunner.pluginExecute(Plugin.class, plugin -> plugin.alert(alert));
                         // Execute the plugin if enable with params
-                        pluginRunner.pluginExecute(PostAlertPlugin.class, (afterAlertPlugin, pluginContext) -> afterAlertPlugin.execute(alert, pluginContext));
+                        pluginRunner.pluginExecute(PostAlertPlugin.class, (afterAlertPlugin, pluginContext) -> {
+                            if (pluginContext.param().getString("script", null) != null) {
+                                sendScript(pluginContext);
+                            } else {
+                                afterAlertPlugin.execute(alert, pluginContext);
+                            }
+                        });
 
                     }
                 } catch (IgnoreException ignored) {
@@ -145,6 +162,28 @@ public class DispatcherAlarm implements InitializingBean {
                     log.error(exception.getMessage(), exception);
                 }
             }
+        }
+
+        private void sendScript(PluginContext pluginContext) {
+            String type = pluginContext.param().getString("type", null);
+            if (type == null) {
+                log.warn("Script type is null");
+                return;
+            }
+
+            ScriptExecutor scriptExecutor = getScriptExecutorByType(type);
+            if (scriptExecutor == null) {
+                log.warn("No executor found for script type: {}", type);
+                return;
+            }
+
+            String scriptContent = pluginContext.param().getString("script", null);
+            if (scriptContent == null) {
+                log.warn("Script is null");
+                return;
+            }
+            Script script = Script.builder().type(type).content(scriptContent).build();
+            collectorJobScheduler.executeSyncScript(script, pluginContext.param().getString("collector", null));
         }
 
         private void sendNotify(Alert alert) {
@@ -162,6 +201,17 @@ public class DispatcherAlarm implements InitializingBean {
                 });
             }));
         }
+    }
+
+    public ScriptExecutor getScriptExecutorByType(String type) {
+        return getScriptExecutors().get(type);
+    }
+
+    private Map<String, ScriptExecutor> getScriptExecutors() {
+        ApplicationContext context = SpringContextHolder.getApplicationContext();
+        Map<String, ScriptExecutor> beansOfType = context.getBeansOfType(ScriptExecutor.class);
+        return beansOfType.values().stream()
+                .collect(Collectors.toMap(ScriptExecutor::scriptType, Function.identity()));
     }
 
 }

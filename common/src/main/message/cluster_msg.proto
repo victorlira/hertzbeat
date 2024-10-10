@@ -50,6 +50,8 @@ enum MessageType
     RESPONSE_CYCLIC_TASK_DATA = 7;
     // collector go close to master
     GO_CLOSE = 8;
+    // official script execute plugin
+    SCRIPT_PLUGIN = 9;
 }
 
 enum Direction {
