@@ -380,21 +380,16 @@ public class CollectorJobScheduler implements CollectorScheduling, CollectJobSch
         ConsistentHash.Node node = consistentHash.getNode(collector);
         ClusterMsg.Message message = ClusterMsg.Message.newBuilder()
                 .setType(ClusterMsg.MessageType.SCRIPT_PLUGIN)
+                .setIdentity(collector)
                 .setDirection(ClusterMsg.Direction.REQUEST)
                 .setMsg(JsonUtil.toJson(script))
                 .build();
-        AtomicReference<String> response = new AtomicReference<>("");
-        boolean result = this.manageServer.sendMsg(node.getIdentity(), message);
-        if (result) {
-            CollectResponseEventListener listener = new CollectResponseEventListener() {
-                @Override
-                public void scriptResponse(String scriptOutput) {
-                    response.set(scriptOutput);
-                }
-            };
-            eventListeners.put(script.getId(), listener);
+        ClusterMsg.Message result = this.manageServer.sendMsgSync(node.getIdentity(), message);
+        if (result == null) {
+            log.warn("node {} response is null", node.getIdentity());
+            return null;
         }
-        return response.get();
+        return result.getMsg();
     }
 
     @Override

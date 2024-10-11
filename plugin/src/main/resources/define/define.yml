@@ -45,12 +45,12 @@ params:
       en-US: Script Content
     type: script
     required: true
-#  - field: collector-config
-#    name:
-#      zh-CN: 采集器
-#      en-US: Collector
-#    type: collectors-selection
-#    required: true
+  - field: collector
+    name:
+      zh-CN: 采集器
+      en-US: Collector
+    type: collectors-selection
+    required: true
 #  - field: alert-rule
 #    name:
 #      zh-CN: 阈值规则ID

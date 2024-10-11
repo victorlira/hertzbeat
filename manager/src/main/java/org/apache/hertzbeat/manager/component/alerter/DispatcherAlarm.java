@@ -34,6 +34,9 @@ import org.apache.hertzbeat.common.entity.plugin.Script;
 import org.apache.hertzbeat.common.queue.CommonDataQueue;
 import org.apache.hertzbeat.common.script.ScriptExecutor;
 import org.apache.hertzbeat.common.support.SpringContextHolder;
+import org.apache.hertzbeat.common.util.ScriptUtil;
+import org.apache.hertzbeat.manager.dao.PluginParamDao;
+import org.apache.hertzbeat.manager.pojo.dto.PluginParam;
 import org.apache.hertzbeat.manager.scheduler.CollectorJobScheduler;
 import org.apache.hertzbeat.manager.service.NoticeConfigService;
 import org.apache.hertzbeat.manager.support.exception.AlertNoticeException;
@@ -61,13 +64,16 @@ public class DispatcherAlarm implements InitializingBean {
     private final Map<Byte, AlertNotifyHandler> alertNotifyHandlerMap;
     private final PluginRunner pluginRunner;
     private final CollectorJobScheduler collectorJobScheduler;
+    private final PluginParamDao pluginParamDao;
 
     public DispatcherAlarm(AlerterWorkerPool workerPool,
                            CommonDataQueue dataQueue,
                            NoticeConfigService noticeConfigService,
                            AlertStoreHandler alertStoreHandler,
-                           List<AlertNotifyHandler> alertNotifyHandlerList, PluginRunner pluginRunner,
-                           CollectorJobScheduler collectorJobScheduler) {
+                           List<AlertNotifyHandler> alertNotifyHandlerList,
+                           PluginRunner pluginRunner,
+                           CollectorJobScheduler collectorJobScheduler,
+                           PluginParamDao pluginParamDao) {
         this.workerPool = workerPool;
         this.dataQueue = dataQueue;
         this.noticeConfigService = noticeConfigService;
@@ -75,6 +81,7 @@ public class DispatcherAlarm implements InitializingBean {
         this.pluginRunner = pluginRunner;
         alertNotifyHandlerMap = Maps.newHashMapWithExpectedSize(alertNotifyHandlerList.size());
         this.collectorJobScheduler = collectorJobScheduler;
+        this.pluginParamDao = pluginParamDao;
         alertNotifyHandlerList.forEach(r -> alertNotifyHandlerMap.put(r.type(), r));
     }
 
@@ -115,6 +122,14 @@ public class DispatcherAlarm implements InitializingBean {
         return false;
     }
 
+    private Script getScriptById(Long id) {
+        List<PluginParam> pluginParams = pluginParamDao.findParamsByPluginMetadataId(id);
+        if (pluginParams == null || pluginParams.isEmpty()) {
+            return null;
+        }
+        return null;
+        }
+
     private NoticeReceiver getOneReceiverById(Long id) {
         return noticeConfigService.getReceiverById(id);
     }
@@ -146,7 +161,7 @@ public class DispatcherAlarm implements InitializingBean {
                         pluginRunner.pluginExecute(Plugin.class, plugin -> plugin.alert(alert));
                         // Execute the plugin if enable with params
                         pluginRunner.pluginExecute(PostAlertPlugin.class, (afterAlertPlugin, pluginContext) -> {
-                            if (pluginContext.param().getString("script", null) != null) {
+                            if (isScript(pluginContext)) {
                                 sendScript(pluginContext);
                             } else {
                                 afterAlertPlugin.execute(alert, pluginContext);
@@ -162,6 +177,10 @@ public class DispatcherAlarm implements InitializingBean {
                     log.error(exception.getMessage(), exception);
                 }
             }
+        }
+
+        private static boolean isScript(PluginContext pluginContext) {
+            return (pluginContext.param().getString("script", null) != null);
         }
 
         private void sendScript(PluginContext pluginContext) {
@@ -182,7 +201,7 @@ public class DispatcherAlarm implements InitializingBean {
                 log.warn("Script is null");
                 return;
             }
-            Script script = Script.builder().type(type).content(scriptContent).build();
+            Script script = Script.builder().type(type).content(scriptContent).id(ScriptUtil.generateScriptKey(scriptContent)).build();
             collectorJobScheduler.executeSyncScript(script, pluginContext.param().getString("collector", null));
         }
 

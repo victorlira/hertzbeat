@@ -30,6 +30,8 @@ import org.apache.hertzbeat.common.entity.alerter.Alert;
 import org.apache.hertzbeat.common.entity.manager.NoticeReceiver;
 import org.apache.hertzbeat.common.entity.manager.NoticeTemplate;
 import org.apache.hertzbeat.common.queue.CommonDataQueue;
+import org.apache.hertzbeat.manager.dao.PluginParamDao;
+import org.apache.hertzbeat.manager.scheduler.CollectorJobScheduler;
 import org.apache.hertzbeat.manager.service.NoticeConfigService;
 import org.apache.hertzbeat.plugin.runner.PluginRunner;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,6 +65,12 @@ class DispatcherAlarmTest {
     @Mock
     private AlertNotifyHandler alertNotifyHandler;
 
+    @Mock
+    private CollectorJobScheduler collectorJobScheduler;
+
+    @Mock
+    private PluginParamDao pluginParamDao;
+
     private DispatcherAlarm dispatcherAlarm;
 
     private static final int DISPATCH_THREADS = 3;
@@ -77,7 +85,10 @@ class DispatcherAlarmTest {
                 noticeConfigService,
                 alertStoreHandler,
                 alertNotifyHandlerList,
-                pluginRunner
+                pluginRunner,
+                collectorJobScheduler,
+                pluginParamDao
+
         );
     }
 

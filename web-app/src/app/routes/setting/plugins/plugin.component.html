@@ -183,7 +183,12 @@
         <nz-form-item>
           <nz-form-label nzSpan="5" [nzRequired]="paramDefine.required" [nzFor]="paramDefine.field">{{ paramDefine.name }}</nz-form-label>
           <nz-form-control nzSpan="24" [nzErrorTip]="'validation.required' | i18n">
-            <app-form-field [item]="paramDefine" [name]="paramDefine.field" [(ngModel)]="params[paramDefine.field].paramValue" />
+            <app-form-field
+              [item]="paramDefine"
+              [name]="paramDefine.field"
+              [extra]="{collectors}"
+              [(ngModel)]="params[paramDefine.field].paramValue"
+            />
           </nz-form-control>
         </nz-form-item>
       </ng-container>

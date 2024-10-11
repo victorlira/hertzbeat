@@ -56,15 +56,4 @@ public class DefaultPluginRunner implements PluginRunner {
             log.error("plugin execute failed", e);
         }
     }
-
-    /**
-     * execute script
-     *
-     * @param clazz   plugin class
-     * @param execute script execution logic
-     */
-    @Override
-    public <T> void scriptExecute(Class<T> clazz, Consumer<T> execute) {
-
-    }
 }

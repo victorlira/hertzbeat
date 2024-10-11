@@ -17,6 +17,7 @@
 
 package org.apache.hertzbeat.common.util;
 
+import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -30,17 +31,16 @@ public class ScriptUtil {
      * @param script script
      * @return key
      */
-    public static String generateScriptKey(String script) {
+    public static Long generateScriptKey(String script) {
         try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
             byte[] hashBytes = md.digest(script.getBytes());
-            StringBuilder sb = new StringBuilder();
-            for (byte b : hashBytes) {
-                sb.append(String.format("%02x", b));
-            }
-            return sb.toString();
+
+            // Use the first 8 bytes to create a Long
+            ByteBuffer buffer = ByteBuffer.wrap(hashBytes);
+            return buffer.getLong();
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("MD5 algorithm not found", e);
+            throw new RuntimeException("SHA-256 algorithm not found", e);
         }
     }
 }

@@ -50,7 +50,7 @@ public interface CollectJobScheduling {
      */
     String executeSyncScript(Script script, String collector);
 
-                             /**
+    /**
      * Issue periodic asynchronous collection tasks
      * @param job Collect task details
      * @param collector collector identity name

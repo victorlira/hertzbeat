@@ -4,6 +4,9 @@ import org.apache.hertzbeat.common.script.ScriptExecutor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+/**
+ * CollectorScriptExecutor is used to execute the script files in the collector module.
+ */
 @Component
 public class CollectorScriptExecutor {
 

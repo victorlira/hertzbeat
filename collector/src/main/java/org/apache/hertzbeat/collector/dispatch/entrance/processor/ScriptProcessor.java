@@ -18,25 +18,43 @@
 package org.apache.hertzbeat.collector.dispatch.entrance.processor;
 
 import io.netty.channel.ChannelHandlerContext;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.hertzbeat.collector.dispatch.entrance.CollectServer;
+import org.apache.hertzbeat.common.constants.CommonConstants;
 import org.apache.hertzbeat.common.entity.message.ClusterMsg;
+import org.apache.hertzbeat.common.entity.plugin.Script;
 import org.apache.hertzbeat.common.script.ScriptExecutor;
+import org.apache.hertzbeat.common.util.JsonUtil;
 import org.apache.hertzbeat.remoting.netty.NettyRemotingProcessor;
 
+/**
+ * ScriptProcessor
+ */
+@Slf4j
 public class ScriptProcessor implements NettyRemotingProcessor {
 
-    private final ScriptExecutor scriptExecutor;
+    private final CollectServer collectServer;
 
-    public ScriptProcessor(ScriptExecutor scriptExecutor) {
-        this.scriptExecutor = scriptExecutor;
+    public ScriptProcessor(final CollectServer collectServer) {
+        this.collectServer = collectServer;
     }
 
     @Override
     public ClusterMsg.Message handle(ChannelHandlerContext ctx, ClusterMsg.Message message) {
+        String result = null;
         try {
-            scriptExecutor.executeScript(message.getMsg());
+            Script script = JsonUtil.fromJson(message.getMsg(), Script.class);
+            if (script != null) {
+                result = String.valueOf(collectServer.getScriptExecutor().executeScript(script.getContent()));
+                log.info("ScriptProcessor execute script result: {}", result);
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return null;
+        return ClusterMsg.Message.newBuilder()
+                .setIdentity(message.getIdentity())
+                .setDirection(ClusterMsg.Direction.RESPONSE)
+                .setMsg(result)
+                .build();
     }
 }

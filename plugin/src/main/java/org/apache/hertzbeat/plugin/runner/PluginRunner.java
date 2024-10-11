@@ -43,12 +43,4 @@ public interface PluginRunner {
      */
     <T> void pluginExecute(Class<T> clazz, BiConsumer<T, PluginContext> execute);
 
-    /**
-     * execute script
-     * @param clazz plugin class
-     * @param execute script execution logic
-     * @param <T> script type
-     */
-    <T> void scriptExecute(Class<T> clazz, Consumer<T> execute);
-
 }

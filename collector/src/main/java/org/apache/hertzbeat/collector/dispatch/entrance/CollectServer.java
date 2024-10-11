@@ -34,9 +34,11 @@ import org.apache.hertzbeat.collector.dispatch.entrance.processor.GoCloseProcess
 import org.apache.hertzbeat.collector.dispatch.entrance.processor.GoOfflineProcessor;
 import org.apache.hertzbeat.collector.dispatch.entrance.processor.GoOnlineProcessor;
 import org.apache.hertzbeat.collector.dispatch.entrance.processor.HeartbeatProcessor;
+import org.apache.hertzbeat.collector.dispatch.entrance.processor.ScriptProcessor;
 import org.apache.hertzbeat.collector.dispatch.timer.TimerDispatch;
 import org.apache.hertzbeat.common.entity.dto.CollectorInfo;
 import org.apache.hertzbeat.common.entity.message.ClusterMsg;
+import org.apache.hertzbeat.common.script.ScriptExecutor;
 import org.apache.hertzbeat.common.support.CommonThreadPool;
 import org.apache.hertzbeat.common.util.JsonUtil;
 import org.apache.hertzbeat.remoting.RemotingClient;
@@ -63,6 +65,8 @@ public class CollectServer implements CommandLineRunner {
     private final TimerDispatch timerDispatch;
 
     private final CollectorInfoProperties infoProperties;
+
+    private final ScriptExecutor scriptExecutor;
     
     private RemotingClient remotingClient;
 
@@ -72,7 +76,8 @@ public class CollectServer implements CommandLineRunner {
                          final TimerDispatch timerDispatch,
                          final DispatchProperties properties,
                          final CommonThreadPool threadPool,
-                         final CollectorInfoProperties infoProperties) {
+                         final CollectorInfoProperties infoProperties,
+                         ScriptExecutor scriptExecutor) {
         if (properties == null || properties.getEntrance() == null || properties.getEntrance().getNetty() == null) {
             log.error("init error, please config dispatch entrance netty props in application.yml");
             throw new IllegalArgumentException("please config dispatch entrance netty props");
@@ -85,6 +90,7 @@ public class CollectServer implements CommandLineRunner {
         this.timerDispatch = timerDispatch;
         this.collectJobService.setCollectServer(this);
         this.infoProperties = infoProperties;
+        this.scriptExecutor = scriptExecutor;
         this.init(properties, threadPool);
     }
 
@@ -102,6 +108,7 @@ public class CollectServer implements CommandLineRunner {
         this.remotingClient.registerProcessor(ClusterMsg.MessageType.GO_OFFLINE, new GoOfflineProcessor());
         this.remotingClient.registerProcessor(ClusterMsg.MessageType.GO_ONLINE, new GoOnlineProcessor());
         this.remotingClient.registerProcessor(ClusterMsg.MessageType.GO_CLOSE, new GoCloseProcessor(this));
+        this.remotingClient.registerProcessor(ClusterMsg.MessageType.SCRIPT_PLUGIN, new ScriptProcessor(this));
     }
 
     public void shutdown() {
@@ -112,6 +119,10 @@ public class CollectServer implements CommandLineRunner {
 
     public CollectJobService getCollectJobService() {
         return collectJobService;
+    }
+
+    public ScriptExecutor getScriptExecutor() {
+        return scriptExecutor;
     }
 
     public void sendMsg(final ClusterMsg.Message message) {

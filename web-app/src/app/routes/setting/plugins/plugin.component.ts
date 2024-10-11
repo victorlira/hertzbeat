@@ -27,8 +27,10 @@ import { NzTableQueryParams } from 'ng-zorro-antd/table';
 import { NzUploadFile } from 'ng-zorro-antd/upload';
 import { finalize } from 'rxjs/operators';
 
+import { Collector } from '../../../pojo/Collector';
 import { ParamDefine } from '../../../pojo/ParamDefine';
 import { Plugin } from '../../../pojo/Plugin';
+import { CollectorService } from '../../../service/collector.service';
 import { PluginService } from '../../../service/plugin.service';
 
 @Component({
@@ -41,6 +43,7 @@ export class SettingPluginsComponent implements OnInit {
     private modal: NzModalService,
     private pluginService: PluginService,
     private fb: FormBuilder,
+    private collectorSvc: CollectorService,
     @Inject(ALAIN_I18N_TOKEN) private i18nSvc: I18NService
   ) {
     this.pluginForm = this.fb.group({
@@ -63,9 +66,17 @@ export class SettingPluginsComponent implements OnInit {
   fileList: NzUploadFile[] = [];
   pluginForm: FormGroup;
   value!: string;
+  collectors!: Collector[];
 
   ngOnInit(): void {
     this.loadPluginsTable();
+    this.collectorSvc.getCollectors().subscribe(message => {
+      if (message.code === 0) {
+        this.collectors = message.data.content?.map(item => item.collector);
+      } else {
+        console.warn(message.msg);
+      }
+    });
   }
 
   sync() {

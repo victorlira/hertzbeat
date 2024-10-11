@@ -20,6 +20,7 @@
 
 package org.apache.hertzbeat.common.entity.message;
 
+@SuppressWarnings("all")
 public final class ClusterMsg {
     private ClusterMsg() {}
     public static void registerAllExtensions(

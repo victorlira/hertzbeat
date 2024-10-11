@@ -34,7 +34,7 @@ public final class CacheFactory {
     private static final CommonCacheService<String, Object> ALERT_CONVERGE_CACHE =
             new CaffeineCacheServiceImpl<>(10, 1000, Duration.ofDays(1), false);
 
-    private static final CommonCacheService<String, Object> SCRIPT_CACHE =
+    private static final CommonCacheService<Long, Object> SCRIPT_CACHE =
             new CaffeineCacheServiceImpl<>(10, 1000, Duration.ofDays(1), false);
     
     /**
@@ -65,7 +65,7 @@ public final class CacheFactory {
      * get script cache
      * @return script cache
      */
-    public static CommonCacheService<String, Object> getScriptCache() {
+    public static CommonCacheService<Long, Object> getScriptCache() {
         return SCRIPT_CACHE;
     }
 }
