@@ -34,7 +34,7 @@ import org.apache.hertzbeat.collector.dispatch.entrance.processor.GoCloseProcess
 import org.apache.hertzbeat.collector.dispatch.entrance.processor.GoOfflineProcessor;
 import org.apache.hertzbeat.collector.dispatch.entrance.processor.GoOnlineProcessor;
 import org.apache.hertzbeat.collector.dispatch.entrance.processor.HeartbeatProcessor;
-import org.apache.hertzbeat.collector.dispatch.entrance.processor.ScriptProcessor;
+import org.apache.hertzbeat.collector.dispatch.entrance.processor.ScriptRequestProcessor;
 import org.apache.hertzbeat.collector.dispatch.timer.TimerDispatch;
 import org.apache.hertzbeat.common.entity.dto.CollectorInfo;
 import org.apache.hertzbeat.common.entity.message.ClusterMsg;
@@ -108,7 +108,7 @@ public class CollectServer implements CommandLineRunner {
         this.remotingClient.registerProcessor(ClusterMsg.MessageType.GO_OFFLINE, new GoOfflineProcessor());
         this.remotingClient.registerProcessor(ClusterMsg.MessageType.GO_ONLINE, new GoOnlineProcessor());
         this.remotingClient.registerProcessor(ClusterMsg.MessageType.GO_CLOSE, new GoCloseProcessor(this));
-        this.remotingClient.registerProcessor(ClusterMsg.MessageType.SCRIPT_PLUGIN, new ScriptProcessor(this));
+        this.remotingClient.registerProcessor(ClusterMsg.MessageType.SCRIPT_PLUGIN, new ScriptRequestProcessor(this));
     }
 
     public void shutdown() {

@@ -20,10 +20,8 @@ package org.apache.hertzbeat.collector.dispatch.entrance.processor;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hertzbeat.collector.dispatch.entrance.CollectServer;
-import org.apache.hertzbeat.common.constants.CommonConstants;
 import org.apache.hertzbeat.common.entity.message.ClusterMsg;
 import org.apache.hertzbeat.common.entity.plugin.Script;
-import org.apache.hertzbeat.common.script.ScriptExecutor;
 import org.apache.hertzbeat.common.util.JsonUtil;
 import org.apache.hertzbeat.remoting.netty.NettyRemotingProcessor;
 
@@ -31,11 +29,11 @@ import org.apache.hertzbeat.remoting.netty.NettyRemotingProcessor;
  * ScriptProcessor
  */
 @Slf4j
-public class ScriptProcessor implements NettyRemotingProcessor {
+public class ScriptRequestProcessor implements NettyRemotingProcessor {
 
     private final CollectServer collectServer;
 
-    public ScriptProcessor(final CollectServer collectServer) {
+    public ScriptRequestProcessor(final CollectServer collectServer) {
         this.collectServer = collectServer;
     }
 

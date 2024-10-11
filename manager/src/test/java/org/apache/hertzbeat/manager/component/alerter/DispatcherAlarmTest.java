@@ -86,9 +86,7 @@ class DispatcherAlarmTest {
                 alertStoreHandler,
                 alertNotifyHandlerList,
                 pluginRunner,
-                collectorJobScheduler,
-                pluginParamDao
-
+                collectorJobScheduler
         );
     }
 

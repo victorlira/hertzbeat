@@ -33,6 +33,7 @@ import org.apache.hertzbeat.manager.scheduler.netty.process.CollectOneTimeDataRe
 import org.apache.hertzbeat.manager.scheduler.netty.process.CollectorOfflineProcessor;
 import org.apache.hertzbeat.manager.scheduler.netty.process.CollectorOnlineProcessor;
 import org.apache.hertzbeat.manager.scheduler.netty.process.HeartbeatProcessor;
+import org.apache.hertzbeat.manager.scheduler.netty.process.ScriptResponseProcessor;
 import org.apache.hertzbeat.remoting.RemotingServer;
 import org.apache.hertzbeat.remoting.event.NettyEventListener;
 import org.apache.hertzbeat.remoting.netty.NettyRemotingServer;
@@ -82,6 +83,7 @@ public class ManageServer implements CommandLineRunner {
         this.remotingServer.registerProcessor(ClusterMsg.MessageType.GO_OFFLINE, new CollectorOfflineProcessor(this));
         this.remotingServer.registerProcessor(ClusterMsg.MessageType.RESPONSE_ONE_TIME_TASK_DATA, new CollectOneTimeDataResponseProcessor(this));
         this.remotingServer.registerProcessor(ClusterMsg.MessageType.RESPONSE_CYCLIC_TASK_DATA, new CollectCyclicDataResponseProcessor());
+        this.remotingServer.registerProcessor(ClusterMsg.MessageType.SCRIPT_PLUGIN, new ScriptResponseProcessor(this));
 
         this.channelSchedule = Executors.newSingleThreadScheduledExecutor();
     }

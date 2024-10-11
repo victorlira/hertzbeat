@@ -30,6 +30,7 @@ import org.apache.hertzbeat.collector.dispatch.DispatchProperties;
 import org.apache.hertzbeat.collector.dispatch.entrance.internal.CollectJobService;
 import org.apache.hertzbeat.collector.dispatch.timer.TimerDispatch;
 import org.apache.hertzbeat.common.entity.message.ClusterMsg;
+import org.apache.hertzbeat.common.script.ScriptExecutor;
 import org.apache.hertzbeat.common.support.CommonThreadPool;
 import org.apache.hertzbeat.remoting.RemotingClient;
 import org.junit.jupiter.api.BeforeEach;
@@ -67,6 +68,9 @@ class CollectServerTest {
     @Mock
     private CollectorInfoProperties infoProperties;
 
+    @Mock
+    private ScriptExecutor scriptExecutor;
+
     private CollectServer collectServer;
 
     private CollectServer.CollectNettyEventListener collectNettyEventListener;
@@ -79,7 +83,7 @@ class CollectServerTest {
         when(entranceProperties.getNetty()).thenReturn(nettyProperties);
         when(properties.getEntrance()).thenReturn(entranceProperties);
 
-        collectServer = new CollectServer(collectJobService, timerDispatch, properties, threadPool, infoProperties);
+        collectServer = new CollectServer(collectJobService, timerDispatch, properties, threadPool, infoProperties, scriptExecutor);
         collectNettyEventListener = collectServer.new CollectNettyEventListener();
     }
 

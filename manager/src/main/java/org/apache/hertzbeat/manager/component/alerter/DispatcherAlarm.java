@@ -35,8 +35,6 @@ import org.apache.hertzbeat.common.queue.CommonDataQueue;
 import org.apache.hertzbeat.common.script.ScriptExecutor;
 import org.apache.hertzbeat.common.support.SpringContextHolder;
 import org.apache.hertzbeat.common.util.ScriptUtil;
-import org.apache.hertzbeat.manager.dao.PluginParamDao;
-import org.apache.hertzbeat.manager.pojo.dto.PluginParam;
 import org.apache.hertzbeat.manager.scheduler.CollectorJobScheduler;
 import org.apache.hertzbeat.manager.service.NoticeConfigService;
 import org.apache.hertzbeat.manager.support.exception.AlertNoticeException;
@@ -64,7 +62,6 @@ public class DispatcherAlarm implements InitializingBean {
     private final Map<Byte, AlertNotifyHandler> alertNotifyHandlerMap;
     private final PluginRunner pluginRunner;
     private final CollectorJobScheduler collectorJobScheduler;
-    private final PluginParamDao pluginParamDao;
 
     public DispatcherAlarm(AlerterWorkerPool workerPool,
                            CommonDataQueue dataQueue,
@@ -72,8 +69,7 @@ public class DispatcherAlarm implements InitializingBean {
                            AlertStoreHandler alertStoreHandler,
                            List<AlertNotifyHandler> alertNotifyHandlerList,
                            PluginRunner pluginRunner,
-                           CollectorJobScheduler collectorJobScheduler,
-                           PluginParamDao pluginParamDao) {
+                           CollectorJobScheduler collectorJobScheduler) {
         this.workerPool = workerPool;
         this.dataQueue = dataQueue;
         this.noticeConfigService = noticeConfigService;
@@ -81,7 +77,6 @@ public class DispatcherAlarm implements InitializingBean {
         this.pluginRunner = pluginRunner;
         alertNotifyHandlerMap = Maps.newHashMapWithExpectedSize(alertNotifyHandlerList.size());
         this.collectorJobScheduler = collectorJobScheduler;
-        this.pluginParamDao = pluginParamDao;
         alertNotifyHandlerList.forEach(r -> alertNotifyHandlerMap.put(r.type(), r));
     }
 
@@ -121,14 +116,6 @@ public class DispatcherAlarm implements InitializingBean {
         }
         return false;
     }
-
-    private Script getScriptById(Long id) {
-        List<PluginParam> pluginParams = pluginParamDao.findParamsByPluginMetadataId(id);
-        if (pluginParams == null || pluginParams.isEmpty()) {
-            return null;
-        }
-        return null;
-        }
 
     private NoticeReceiver getOneReceiverById(Long id) {
         return noticeConfigService.getReceiverById(id);
