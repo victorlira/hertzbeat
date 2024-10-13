@@ -148,7 +148,7 @@ public class DispatcherAlarm implements InitializingBean {
                         pluginRunner.pluginExecute(Plugin.class, plugin -> plugin.alert(alert));
                         // Execute the plugin if enable with params
                         pluginRunner.pluginExecute(PostAlertPlugin.class, (afterAlertPlugin, pluginContext) -> {
-                            if (isScript(pluginContext)) {
+                            if (isScriptPlugin(pluginContext)) {
                                 sendScript(pluginContext);
                             } else {
                                 afterAlertPlugin.execute(alert, pluginContext);
@@ -166,7 +166,7 @@ public class DispatcherAlarm implements InitializingBean {
             }
         }
 
-        private static boolean isScript(PluginContext pluginContext) {
+        private static boolean isScriptPlugin(PluginContext pluginContext) {
             return (pluginContext.param().getString("script", null) != null);
         }
 
@@ -190,6 +190,7 @@ public class DispatcherAlarm implements InitializingBean {
             }
             Script script = Script.builder().type(type).content(scriptContent).id(ScriptUtil.generateScriptKey(scriptContent)).build();
             collectorJobScheduler.executeSyncScript(script, pluginContext.param().getString("collector", null));
+            log.info("Script has been sent to collector: {}", script.getId());
         }
 
         private void sendNotify(Alert alert) {

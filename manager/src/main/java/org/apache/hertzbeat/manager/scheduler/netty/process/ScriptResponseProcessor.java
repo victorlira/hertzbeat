@@ -26,14 +26,17 @@ import org.apache.hertzbeat.remoting.netty.NettyRemotingProcessor;
 @Slf4j
 public class ScriptResponseProcessor implements NettyRemotingProcessor {
 
-    private final ManageServer manageServer;
-
     public ScriptResponseProcessor(ManageServer manageServer) {
         this.manageServer = manageServer;
     }
 
+    private final ManageServer manageServer;
+
     @Override
     public ClusterMsg.Message handle(ChannelHandlerContext ctx, ClusterMsg.Message message) {
+        String collector = message.getIdentity();
+        this.manageServer.addChannel(collector, ctx.channel());
+        log.info("receive script response message: {}", message);
         return null;
     }
 }

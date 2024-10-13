@@ -384,10 +384,6 @@ public class CollectorJobScheduler implements CollectorScheduling, CollectJobSch
                 .setMsg(JsonUtil.toJson(script))
                 .build();
         ClusterMsg.Message result = this.manageServer.sendMsgSync(node.getIdentity(), message);
-        if (result == null) {
-            log.warn("node {} response is null", node.getIdentity());
-            return null;
-        }
         return result.getMsg();
     }
 
