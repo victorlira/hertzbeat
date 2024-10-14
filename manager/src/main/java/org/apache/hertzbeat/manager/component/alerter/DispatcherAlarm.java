@@ -189,8 +189,10 @@ public class DispatcherAlarm implements InitializingBean {
                 return;
             }
             Script script = Script.builder().type(type).content(scriptContent).id(ScriptUtil.generateScriptKey(scriptContent)).build();
-            collectorJobScheduler.executeSyncScript(script, pluginContext.param().getString("collector", null));
+            String result = collectorJobScheduler.executeSyncScript(script, pluginContext.param().getString("collector", null));
             log.info("Script has been sent to collector: {}", script.getId());
+            log.info("Script result: {}", result);
+
         }
 
         private void sendNotify(Alert alert) {
