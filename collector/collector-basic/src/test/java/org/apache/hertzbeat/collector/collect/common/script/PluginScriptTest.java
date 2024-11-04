@@ -17,7 +17,7 @@
  *
  */
 
-package org.apache.hertzbeat.collector.script;
+package org.apache.hertzbeat.collector.collect.common.script;
 
 import org.apache.hertzbeat.common.constants.ScriptTypeConstants;
 import org.apache.hertzbeat.common.script.ScriptExecutor;

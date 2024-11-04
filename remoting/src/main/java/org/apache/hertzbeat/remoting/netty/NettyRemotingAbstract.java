@@ -111,7 +111,7 @@ public abstract class NettyRemotingAbstract implements RemotingService {
             this.responseTable.put(identity, responseFuture);
             channel.writeAndFlush(request).addListener(future -> {
                 if (!future.isSuccess()) {
-//                    responseTable.remove(identity);
+                    responseTable.remove(identity);
                     log.warn("send request message failed. request: {}, address: {}, ", request, channel.remoteAddress(), future.cause());
                 }
             });
@@ -123,7 +123,7 @@ public abstract class NettyRemotingAbstract implements RemotingService {
         } catch (InterruptedException e) {
             log.warn("get response message failed, ", e);
         } finally {
-//            responseTable.remove(identity);
+            responseTable.remove(identity);
         }
         return null;
     }

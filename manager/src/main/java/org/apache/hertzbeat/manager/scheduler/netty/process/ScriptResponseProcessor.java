@@ -23,6 +23,9 @@ import org.apache.hertzbeat.common.entity.message.ClusterMsg;
 import org.apache.hertzbeat.manager.scheduler.netty.ManageServer;
 import org.apache.hertzbeat.remoting.netty.NettyRemotingProcessor;
 
+/**
+ * script response processor
+ */
 @Slf4j
 public class ScriptResponseProcessor implements NettyRemotingProcessor {
 
