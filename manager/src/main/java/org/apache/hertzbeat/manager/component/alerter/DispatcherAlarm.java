@@ -53,7 +53,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class DispatcherAlarm implements InitializingBean {
 
-    private static final int DISPATCH_THREADS = 1;
+    private static final int DISPATCH_THREADS = 3;
 
     private final AlerterWorkerPool workerPool;
     private final CommonDataQueue dataQueue;
@@ -147,8 +147,7 @@ public class DispatcherAlarm implements InitializingBean {
                         // Execute the plugin if enable (Compatible with old version plugins, will be removed in later versions)
                         pluginRunner.pluginExecute(Plugin.class, plugin -> plugin.alert(alert));
                         // Execute the plugin if enable with params
-                        pluginRunner.
-                                pluginExecute(PostAlertPlugin.class, (afterAlertPlugin, pluginContext) -> {
+                        pluginRunner.pluginExecute(PostAlertPlugin.class, (afterAlertPlugin, pluginContext) -> {
                             if (isScriptPlugin(pluginContext)) {
                                 sendScript(pluginContext);
                             } else {
@@ -190,8 +189,9 @@ public class DispatcherAlarm implements InitializingBean {
                 return;
             }
             Script script = Script.builder().type(type).content(scriptContent).id(ScriptUtil.generateScriptKey(scriptContent)).build();
-            collectorJobScheduler.executeSyncScript(script, pluginContext.param().getString("collector", null));
+            String result = collectorJobScheduler.executeSyncScript(script, pluginContext.param().getString("collector", null));
             log.info("Script has been sent to collector: {}", pluginContext.param().getString("collector", null));
+            log.info("Script result: {}", result);
         }
 
         private void sendNotify(Alert alert) {
