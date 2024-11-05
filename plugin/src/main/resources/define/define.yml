@@ -14,7 +14,14 @@
 # limitations under the License.
 
 params:
-  - field: type
+  - field: plugin-type
+    name:
+      zh-CN: 插件类型
+      en-US: Plugin Type
+    type: text
+    required: true
+    defaultValue: "script"
+  - field: script-type
     name:
       zh-CN: 脚本类型
       en-US: Script Type
@@ -39,7 +46,7 @@ params:
         value: aviator
       - label: Kotlin
         value: kotlin
-  - field: script
+  - field: script-content
     name:
       zh-CN: 脚本内容
       en-US: Script Content

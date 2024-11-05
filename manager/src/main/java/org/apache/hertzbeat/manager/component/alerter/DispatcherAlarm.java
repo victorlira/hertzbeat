@@ -147,14 +147,7 @@ public class DispatcherAlarm implements InitializingBean {
                         // Execute the plugin if enable (Compatible with old version plugins, will be removed in later versions)
                         pluginRunner.pluginExecute(Plugin.class, plugin -> plugin.alert(alert));
                         // Execute the plugin if enable with params
-                        pluginRunner.pluginExecute(PostAlertPlugin.class, (afterAlertPlugin, pluginContext) -> {
-                            if (isScriptPlugin(pluginContext)) {
-                                sendScript(pluginContext);
-                            } else {
-                                afterAlertPlugin.execute(alert, pluginContext);
-                            }
-                        });
-
+                        pluginRunner.pluginExecute(PostAlertPlugin.class, (afterAlertPlugin, pluginContext) -> afterAlertPlugin.execute(alert, pluginContext));
                     }
                 } catch (IgnoreException ignored) {
                 } catch (InterruptedException e) {
@@ -164,34 +157,6 @@ public class DispatcherAlarm implements InitializingBean {
                     log.error(exception.getMessage(), exception);
                 }
             }
-        }
-
-        private static boolean isScriptPlugin(PluginContext pluginContext) {
-            return (pluginContext.param().getString("script", null) != null);
-        }
-
-        private void sendScript(PluginContext pluginContext) {
-            String type = pluginContext.param().getString("type", null);
-            if (type == null) {
-                log.warn("Script type is null");
-                return;
-            }
-
-            ScriptExecutor scriptExecutor = getScriptExecutorByType(type);
-            if (scriptExecutor == null) {
-                log.warn("No executor found for script type: {}", type);
-                return;
-            }
-
-            String scriptContent = pluginContext.param().getString("script", null);
-            if (scriptContent == null) {
-                log.warn("Script is null");
-                return;
-            }
-            Script script = Script.builder().type(type).content(scriptContent).id(ScriptUtil.generateScriptKey(scriptContent)).build();
-            String result = collectorJobScheduler.executeSyncScript(script, pluginContext.param().getString("collector", null));
-            log.info("Script has been sent to collector: {}", pluginContext.param().getString("collector", null));
-            log.info("Script result: {}", result);
         }
 
         private void sendNotify(Alert alert) {
