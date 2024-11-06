@@ -34,10 +34,10 @@ import { CollectorService } from '../../../service/collector.service';
 import { PluginService } from '../../../service/plugin.service';
 
 @Component({
-  selector: 'app-setting-plugins',
-  templateUrl: './plugin.component.html'
+  selector: 'app-plugin-custom',
+  templateUrl: './custom-plugin.component.html'
 })
-export class SettingPluginsComponent implements OnInit {
+export class CustomPluginComponent implements OnInit {
   constructor(
     private notifySvc: NzNotificationService,
     private modal: NzModalService,

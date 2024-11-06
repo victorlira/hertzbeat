@@ -50,7 +50,7 @@
       "tags": "标签管理",
       "define": "监控模版",
       "status": "状态页面",
-      "plugins": "插件管理"
+      "plugin": "插件管理"
     },
     "extras": {
       "": "更多",

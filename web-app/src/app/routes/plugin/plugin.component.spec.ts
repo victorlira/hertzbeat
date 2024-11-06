@@ -19,20 +19,20 @@
 
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SettingPluginsComponent } from './plugin.component';
+import { PluginComponent } from './plugin.component';
 
-describe('SettingPluginsComponent', () => {
-  let component: SettingPluginsComponent;
-  let fixture: ComponentFixture<SettingPluginsComponent>;
+describe('PluginComponent', () => {
+  let component: PluginComponent;
+  let fixture: ComponentFixture<PluginComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [SettingPluginsComponent]
+      declarations: [PluginComponent]
     }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SettingPluginsComponent);
+    fixture = TestBed.createComponent(PluginComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

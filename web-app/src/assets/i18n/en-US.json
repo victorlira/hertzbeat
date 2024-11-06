@@ -50,7 +50,7 @@
       "tags": "Tags Manage",
       "define": "Monitor Template",
       "status": "Status Page",
-      "plugins": "Plugins Manage"
+      "plugin": "Plugin Manager"
     },
     "extras": {
       "": "More",

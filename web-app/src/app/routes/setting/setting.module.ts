@@ -36,7 +36,6 @@ import { ColorPickerModule } from 'ngx-color-picker';
 
 import { CollectorComponent } from './collector/collector.component';
 import { DefineComponent } from './define/define.component';
-import { SettingPluginsComponent } from './plugins/plugin.component';
 import { SettingRoutingModule } from './setting-routing.module';
 import { MessageServerComponent } from './settings/message-server/message-server.component';
 import { ObjectStoreComponent } from './settings/object-store/object-store.component';
@@ -53,8 +52,7 @@ const COMPONENTS: Array<Type<void>> = [
   SystemConfigComponent,
   ObjectStoreComponent,
   CollectorComponent,
-  StatusComponent,
-  SettingPluginsComponent
+  StatusComponent
 ];
 
 @NgModule({

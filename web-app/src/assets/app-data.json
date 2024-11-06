@@ -201,10 +201,10 @@
           "link": "/setting/tags"
         },
         {
-          "text": "plugins",
-          "i18n": "menu.advanced.plugins",
+          "text": "plugin",
+          "i18n": "menu.advanced.plugin",
           "icon": "anticon-usb",
-          "link": "/setting/plugins"
+          "link": "/plugin"
         }
       ]
     },
